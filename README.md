@@ -26,7 +26,7 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 > [!TIP]
 > 不需要命令行，不需要账号，只要浏览器。
 
-**1 ·** 解压 `claude-chan.zip`，得到一个 `claude-chan` 文件夹。
+**1 ·** 解压 `cchan-pixelcompanion.zip`，得到一个 `cchan-pixelcompanion` 文件夹。
 
 **2 ·** 浏览器地址栏打开扩展页面：
 
@@ -35,7 +35,7 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 | Chrome | `chrome://extensions` |
 | Edge | `edge://extensions` |
 
-**3 ·** 打开右上角的 **开发者模式**，点 **加载已解压的扩展程序**，选中 `claude-chan` 文件夹。
+**3 ·** 打开右上角的 **开发者模式**，点 **加载已解压的扩展程序**，选中 `cchan-pixelcompanion` 文件夹。
 
 **4 ·** 刷新 [claude.ai](https://claude.ai)，她会出现在右下角。
 
@@ -301,7 +301,7 @@ She turns pages while Claude writes, gets shy when Claude needs your OK, and chi
 > [!TIP]
 > No command line, no account — all you need is a browser.
 
-**1 ·** Unzip `claude-chan.zip` to get a `claude-chan` folder.
+**1 ·** Unzip `cchan-pixelcompanion.zip` to get a `cchan-pixelcompanion` folder.
 
 **2 ·** Open the extensions page by typing this into the address bar:
 
@@ -310,7 +310,7 @@ She turns pages while Claude writes, gets shy when Claude needs your OK, and chi
 | Chrome | `chrome://extensions` |
 | Edge | `edge://extensions` |
 
-**3 ·** Turn on **Developer mode** in the top-right corner, click **Load unpacked**, and select the `claude-chan` folder.
+**3 ·** Turn on **Developer mode** in the top-right corner, click **Load unpacked**, and select the `cchan-pixelcompanion` folder.
 
 **4 ·** Refresh [claude.ai](https://claude.ai). She will appear in the bottom-right corner.
 
