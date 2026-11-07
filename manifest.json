@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Claude 娘 · 像素陪伴",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "description": "在 claude.ai 页面上放一只像素 Claude 娘：同步显示 Claude 的输出，完成时叮一声，需要确认时举手提醒。",
   "icons": {
     "16": "icons/icon16.png",
@@ -20,7 +20,7 @@
     "service_worker": "background.js"
   },
   "permissions": ["storage", "unlimitedStorage", "notifications"],
-  "host_permissions": ["https://claude.ai/*"],
+  "host_permissions": ["https://claude.ai/*", "https://chat.deepseek.com/*"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

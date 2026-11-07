@@ -7,12 +7,29 @@ const STATES = [
 const BOOL = ['enabled', 'everywhere', 'showBubble', 'sound', 'confirmSound', 'startSound', 'notify'];
 const NUM = ['height', 'volume', 'doneHoldSec', 'confirmAngrySec', 'errorHoldSec', 'drowsyAfterSec', 'sleepAfterMin'];
 const TXT = ['confirmPattern', 'confirmSelector'];
+// 陪你盯哪个 AI（二选一）
+const SITES = window.CLAUDE_CHAN_SITES;
+let siteId = 'claude';
+const S = () => SITES[siteId] || SITES.claude;
+function showSite() {
+  document.querySelectorAll('#siteSeg label').forEach((l) => l.classList.toggle('on', l.querySelector('input').value === siteId));
+  $('siteHint').textContent = siteId === 'deepseek'
+    ? '现在盯着 chat.deepseek.com：DeepSeek 回答时她工作，答完就叮一声（网页版没有需要确认的操作）。claude.ai 上她不再检测。'
+    : '现在盯着 claude.ai：工作、需要确认、完成都会提醒你。切到 DeepSeek 后改为盯 chat.deepseek.com。';
+  $('everyHint').textContent = `关掉后只在 ${S().host} 上出现；打开后逛别的网页时她也在，状态跟着 ${S().host} 走`;
+}
 
 // ---------------------------------------------------------------- 普通设置
 chrome.storage.sync.get(DEFAULTS, (cfg) => {
   BOOL.forEach((k) => { $(k).checked = !!cfg[k]; $(k).onchange = () => save(k, $(k).checked); });
   NUM.forEach((k) => { $(k).value = cfg[k]; $(k).oninput = () => save(k, Number($(k).value)); });
   TXT.forEach((k) => { $(k).value = cfg[k]; $(k).onchange = () => save(k, $(k).value.trim()); });
+  siteId = cfg.site in SITES ? cfg.site : 'claude';
+  document.querySelectorAll('input[name="site"]').forEach((r) => {
+    r.checked = r.value === siteId;
+    r.onchange = () => { if (r.checked) { siteId = r.value; chrome.storage.sync.set({ site: siteId }); showSite(); } };
+  });
+  showSite();
   pools = Object.assign({}, DEFAULTS.soundPools, cfg.soundPools || {});
   volume = cfg.volume;
   renderPools();
@@ -77,13 +94,13 @@ function sendToTab(msg, cb) {
 }
 document.querySelectorAll('[data-test]').forEach((b) => {
   b.onclick = () => sendToTab({ type: 'test', what: b.dataset.test }, (r) => {
-    if (!r) $('st').textContent = '请先打开 claude.ai';
+    if (!r) $('st').textContent = '请先打开 ' + S().host;
   });
 });
 const NAMES = { idle: '待机', working: '工作中', confirm: '需要确认', angry: '生气', done: '完成', drowsy: '犯困', sleep: '睡觉' };
 function poll() {
   sendToTab({ type: 'status' }, (r) => {
-    if (!r) { $('st').textContent = '不在 claude.ai'; return; }
+    if (!r) { $('st').textContent = '不在 ' + S().host; return; }
     $('st').textContent = NAMES[r.state] || r.state;
     $('status').textContent =
       `状态：${NAMES[r.state] || r.state}\n正在生成：${r.working ? '是' : '否'}\n确认按钮：${r.confirm ? '检测到' : '无'}\n` +

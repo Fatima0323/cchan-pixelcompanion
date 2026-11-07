@@ -1,4 +1,21 @@
-// 后台：系统通知 + 扩展图标角标 + 把 claude.ai 上的状态转播给所有网页
+// 后台：系统通知 + 扩展图标角标 + 把 AI 聊天页（claude.ai / chat.deepseek.com，设置里二选一）上的状态转播给所有网页
+const SITES = {
+  claude:   { url: 'https://claude.ai/new',      match: 'https://claude.ai/*' },
+  deepseek: { url: 'https://chat.deepseek.com/', match: 'https://chat.deepseek.com/*' },
+};
+async function getSite() {
+  const v = await chrome.storage.sync.get({ site: 'claude' });
+  return SITES[v.site] || SITES.claude;
+}
+// 换了模式：之前那个站报上来的状态全部作废
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync' && changes.site) {
+    chain = chain.then(async () => {
+      for (const id of Object.keys(pokers)) { clearInterval(pokers[id]); delete pokers[id]; }
+      await chrome.storage.session.set({ chanLives: {}, chanLive: null });
+    }).catch(() => {});
+  }
+});
 const BADGE = {
   working: { text: '…', color: '#e3692c' },
   confirm: { text: '!', color: '#c0392b' },
@@ -81,19 +98,19 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
     reply({ tabId });
   } else if (msg.type === 'listClaude') {
     // 右键菜单：列出所有 claude.ai 标签页（最近用过的排前面），带上各自的状态
-    chrome.tabs.query({ url: 'https://claude.ai/*' }, async (tabs) => {
+    getSite().then((S) => chrome.tabs.query({ url: S.match }, async (tabs) => {
       void chrome.runtime.lastError;
       const lives = await getLives();
       tabs = (tabs || []).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0));
       reply({ tabs: tabs.map((t) => ({ id: t.id, title: t.title, url: t.url, current: t.id === tabId, state: lives[t.id] && lives[t.id].state })) });
-    });
+    }));
     return true;
   } else if (msg.type === 'openClaude') {
     const win = sender.tab && sender.tab.windowId;
-    chrome.tabs.create(Object.assign({ url: 'https://claude.ai/new', active: true }, win != null ? { windowId: win } : {}));
+    getSite().then((S) => chrome.tabs.create(Object.assign({ url: S.url, active: true }, win != null ? { windowId: win } : {})));
   } else if (msg.type === 'focusClaude') {
     if (msg.tabId) focusTab(msg.tabId);
-    else chrome.tabs.query({ url: 'https://claude.ai/*' }, (tabs) => { if (tabs && tabs[0]) focusTab(tabs[0].id); });
+    else getSite().then((S) => chrome.tabs.query({ url: S.match }, (tabs) => { if (tabs && tabs[0]) focusTab(tabs[0].id); }));
   }
 });
 

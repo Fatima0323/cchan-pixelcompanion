@@ -26,7 +26,7 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 > [!TIP]
 > 不需要命令行，不需要账号，只要浏览器。
 
-**1 ·** 解压 `cchan-pixelcompanion.zip`，得到一个 `cchan-pixelcompanion` 文件夹。
+**1 ·** 在 [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) 页面下载最新的 `cchan-pixelcompanion_版本号.zip`（比如 `cchan-pixelcompanion_0.8.0.zip`），解压后得到一个同名文件夹 `cchan-pixelcompanion_版本号`。
 
 **2 ·** 浏览器地址栏打开扩展页面：
 
@@ -35,7 +35,10 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 | Chrome | `chrome://extensions` |
 | Edge | `edge://extensions` |
 
-**3 ·** 打开右上角的 **开发者模式**，点 **加载已解压的扩展程序**，选中 `cchan-pixelcompanion` 文件夹。
+**3 ·** 打开右上角的 **开发者模式**，点 **加载已解压的扩展程序**，选中 `cchan-pixelcompanion_版本号` 文件夹（里面直接就是 `manifest.json` 的那一层）。
+
+> [!NOTE]
+> 从旧版升级：最简单的是先在扩展页面里**移除**旧版，再加载新版的文件夹，不过这样设置会恢复成默认（浏览器把不同文件夹里的扩展当成两个扩展）。想保留设置的话，把新版文件夹里的所有文件复制进旧版的文件夹、覆盖掉，再在扩展页面点一下她的 **刷新** 按钮。
 
 **4 ·** 刷新 [claude.ai](https://claude.ai)，她会出现在右下角。
 
@@ -62,6 +65,11 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 
 如果你正在看别的标签页，**完成**和**需要确认**还会弹一条系统通知，点一下就能跳回来。扩展图标上也会挂一个小角标：`…` 工作中 · `!` 等你确认 · `✓` 完成。
 
+> [!TIP]
+> **也能陪你用 DeepSeek。** 在设置面板最上面的「陪你盯着」里把 Claude 换成 **DeepSeek**，她就改为盯着 [chat.deepseek.com](https://chat.deepseek.com)：DeepSeek 回答时她进入**工作中**（同样逐字同步、冒 token），答完就**完成**、叮一声；回答变成"服务器繁忙"时她会**生气**。DeepSeek 网页版没有需要你确认的操作，所以这个模式下没有**需要确认**。
+>
+> 两种模式二选一，默认是 Claude 模式：切到 DeepSeek 后她就不再检测 claude.ai，切回来同理。右键菜单里的跳转、系统通知、在所有网页上显示，都会跟着换成当前选中的那个。
+
 <br>
 
 ## 和她互动
@@ -72,7 +80,7 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 
 **✋ 拖动** — 按住拖到任何位置，下次打开还在那里。
 
-**📖 右键菜单** — 右键点她，弹出一张小书签菜单（右键不会触发表情）。现在有一项「跳到 Claude 聊天页」：
+**📖 右键菜单** — 右键点她，弹出一张小书签菜单（右键不会触发表情）。第一项是「跳到 Claude 聊天页」（DeepSeek 模式下是「跳到 DeepSeek 聊天页」）：
 - 还没打开 claude.ai → 帮你新建一个聊天页
 - 只开了一个 → 直接跳过去
 - 开了好几个 → 展开子菜单让你选，最近用过的排在前面，正在工作 / 等确认的会标出来
@@ -85,7 +93,7 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 - **① 黑洞** — 她换成托着黑洞的姿势，被引力微微托离地面、慢慢上下浮着，手心上方浮着一个像素小黑洞（吸积盘旋转、光环、旋臂、被吸进去的粒子、星星）。持续 5 秒：这期间黑洞附近的网页内容会被引力透镜弯曲（越靠近越弯，离得远就恢复原样，靠得很近还能看到翻过来的"爱因斯坦环"），她本人和对话框不受影响；5 秒后一切回到正常。伴有低沉的嗡鸣（跟着设置里的音量走）。透镜用的是 Chromium 的 `backdrop-filter` + SVG 位移滤镜，只在 Chrome / Edge 等 Chromium 浏览器里有扭曲效果
 
 > [!IMPORTANT]
-> 她在**等你确认**的时候，点她不会触发表情，而是直接把页面滚到那个确认按钮并高亮，正事优先。
+> 她在**等你确认**的时候，点她不会触发表情，而是直接把你带到那个在等你的聊天页；如果你已经在那一页，她会告诉你「已经在这个页面啦」。正事优先。
 
 <br>
 
@@ -122,12 +130,12 @@ Claude 每吐出一段字，她头顶就飞出一个像素字 `token`。输出�
 
 <br>
 
-所有声音都由浏览器现场合成，不带任何音频文件。三类事件各有一组音色，每次随机抽一个，并且**不会连着两次一样**：
+提示音都由浏览器现场合成，不带音频文件（只有小动画的音效是内置在扩展里的一小段音频）。三类事件各有一组音色，每次随机抽一个，并且**不会连着两次一样**：
 
 | 事件 | 风格 | 音色 |
 |:--|:--|:--|
 | 完成 | 温暖、有落地感 | 玻璃叮 · 柔和钢琴 · 双音上扬 · 三连琶音 · 卡林巴 |
-| 需要确认 | 亮、带一点催促 | 音乐盒 · 电子叮 · 提醒双音 |
+| 需要确认 | 柔和地叫你一声 | 轻铃 · 微风 · 轻声呼唤（默认）；音乐盒 · 电子叮 · 提醒双音（可在设置里勾选） |
 | 开始工作 | 短、轻，音量减半 | 马林巴 · 轻点 |
 
 > 这些是合成出来的近似音色，并不是 Claude 应用里的原始音效。
@@ -141,7 +149,7 @@ Claude 每吐出一段字，她头顶就飞出一个像素字 `token`。输出�
 点浏览器右上角的扩展图标即可打开。
 
 <table>
-<tr><td width="30%"><b>基础</b></td><td>开关、<b>在所有网页上显示</b>、对话框显示、大小；还能一键<b>演示</b>任意状态，看她的样子</td></tr>
+<tr><td width="30%"><b>基础</b></td><td>开关、<b>陪你盯着</b>（Claude / DeepSeek 二选一）、<b>在所有网页上显示</b>、对话框显示、大小；还能一键<b>演示</b>任意状态，看她的样子</td></tr>
 <tr><td><b>声音与通知</b></td><td>音量；三类提示音各自开关；每个音色都能 ▶ 试听，取消勾选就不会被抽到；可以上传自己的完成音</td></tr>
 <tr><td><b>形象</b></td><td>给任意状态上传自己的 PNG，替换内置立绘（支持横排多帧动画，白底自动抠掉）</td></tr>
 <tr><td><b>高级</b></td><td>各种等待时长、识别规则，以及<b>当前页面的实时检测结果</b></td></tr>
@@ -189,7 +197,7 @@ Claude 每吐出一段字，她头顶就飞出一个像素字 `token`。输出�
 
 <br>
 
-claude.ai 改版后，页面结构可能会变，检测就会失灵。先打开 设置 → **高级**，看"当前页面检测"那几行：
+claude.ai（或 DeepSeek）改版后，页面结构可能会变，检测就会失灵。先打开 设置 → **高级**，看"当前页面检测"那几行：
 
 - **正在生成** 一直是"否" → 生成状态没识别到
 - **确认按钮** 一直是"无" → 你的界面上，确认按钮的文字可能不在默认规则里
@@ -222,7 +230,7 @@ claude.ai 改版后，页面结构可能会变，检测就会失灵。先打开 
 
 ## 隐私
 
-她只读取 `https://claude.ai/*` 页面上的内容来判断 Claude 的状态。打开"在所有网页上显示"后，她也会出现在其他网页上，但在那些网页上**只负责显示**，不读取网页内容。
+她只读取你选中的那个 AI 聊天站（Claude 模式下是 `https://claude.ai/*`，DeepSeek 模式下是 `https://chat.deepseek.com/*`）上的内容来判断 AI 的状态。打开"在所有网页上显示"后，她也会出现在其他网页上，但在那些网页上**只负责显示**，不读取网页内容。
 
 - 不联网，不向任何地方发送数据
 - 设置、你上传的图片和音频，都只保存在你自己的浏览器里
@@ -236,18 +244,23 @@ claude.ai 改版后，页面结构可能会变，检测就会失灵。先打开 
 <br>
 
 ```
-claude-chan/
-├─ manifest.json     扩展清单
-├─ content.js        状态检测 · 对话框 · 互动 · 台词
-├─ sprite.js         角色渲染：立绘 + 动作 + 特效 + token
-├─ sprite-art.js     七张内置立绘（已抠图，96 色量化）
-├─ book.js           对话框背后那本像素书
-├─ sounds.js         提示音合成与不重复随机
-├─ defaults.js       默认设置
-├─ background.js     系统通知、图标角标
-├─ popup.html / .js  设置面板
-├─ icons/            图标
-└─ docs/             README 里用的图
+cchan-pixelcompanion_版本号/
+├─ manifest.json      扩展清单
+├─ content.js         状态检测（Claude / DeepSeek）· 对话框 · 互动 · 台词 · 右键菜单
+├─ sprite.js          角色渲染：立绘 + 动作 + 特效 + token
+├─ sprite-art.js      内置立绘：七种状态 + 托着黑洞的姿势（已抠图，96 色量化）
+├─ book.js            对话框背后那本像素书
+├─ sounds.js          提示音合成与不重复随机
+├─ anim-logo.js       小动画「Claude娘降临」
+├─ anim-logo-art.js   ↑ 用到的花瓣形状和音效
+├─ anim-book.js       小动画「书页纷飞」
+├─ anim-art.js        ↑ 用到的书本像素图和音效
+├─ fx-blackhole.js    特效「黑洞」：黑洞本体 + 引力透镜
+├─ defaults.js        默认设置、支持的 AI 聊天站
+├─ background.js      系统通知、图标角标、状态转播、右键菜单的跳转
+├─ popup.html / .js   设置面板
+├─ icons/             图标
+└─ docs/              README 里用的图
 ```
 
 **改台词**：在 `content.js` 里搜 `LINES`，每种场景是一组句子，往里面加就行。
@@ -260,6 +273,8 @@ claude-chan/
 | 最新输出 | 最后一个 `[data-is-streaming]` / `.font-claude-response` 元素 |
 | 需要确认 | 按钮文字匹配设置里的正则 |
 | 出错 | 可见的 `[role="alert"]` 里出现 error / failed / 出错 等字样 |
+
+**DeepSeek 模式**的检测在 `content.js` 的 `SELS.deepseek` 和 `dsWorking()`：输入框为空时，旁边的发送键变成亮着的"停止"键就算在回答；另外最新一条回答（`.ds-markdown`）的字数在连续变化也算。回答里出现"服务器繁忙"算出错。
 
 **改书的样子**：`book.js` 开头的几个常量，分别控制书皮厚度、书脊宽度、书皮探出长度。
 
@@ -301,7 +316,7 @@ She turns pages while Claude writes, gets shy when Claude needs your OK, and chi
 > [!TIP]
 > No command line, no account — all you need is a browser.
 
-**1 ·** Unzip `cchan-pixelcompanion.zip` to get a `cchan-pixelcompanion` folder.
+**1 ·** Download the latest `cchan-pixelcompanion_<version>.zip` (for example, `cchan-pixelcompanion_0.8.0.zip`) from the [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) page, and unzip it to get a folder with the same name, `cchan-pixelcompanion_<version>`.
 
 **2 ·** Open the extensions page by typing this into the address bar:
 
@@ -310,7 +325,10 @@ She turns pages while Claude writes, gets shy when Claude needs your OK, and chi
 | Chrome | `chrome://extensions` |
 | Edge | `edge://extensions` |
 
-**3 ·** Turn on **Developer mode** in the top-right corner, click **Load unpacked**, and select the `cchan-pixelcompanion` folder.
+**3 ·** Turn on **Developer mode** in the top-right corner, click **Load unpacked**, and select the `cchan-pixelcompanion_<version>` folder (the level that directly contains `manifest.json`).
+
+> [!NOTE]
+> Upgrading from an older version: the simplest way is to **remove** the old version on the extensions page and then load the new folder, but this resets your settings to the defaults (the browser treats extensions loaded from different folders as different extensions). To keep your settings, copy all the files from the new folder into the old folder, overwriting the old ones, then click her **Reload** button on the extensions page.
 
 **4 ·** Refresh [claude.ai](https://claude.ai). She will appear in the bottom-right corner.
 
@@ -337,6 +355,11 @@ She keeps an eye on the page and switches between seven looks depending on what 
 
 If you are looking at another tab, **Done** and **Needs confirmation** also trigger a system notification — click it to jump back. The extension icon also shows a small badge: `…` working · `!` waiting for your confirmation · `✓` done.
 
+> [!TIP]
+> **She can keep you company on DeepSeek, too.** At the top of the settings panel, switch 「陪你盯着」 (Watching) from Claude to **DeepSeek**, and she will watch [chat.deepseek.com](https://chat.deepseek.com) instead: while DeepSeek is answering she is **Working** (mirroring the output word by word and popping out tokens as usual); when the answer is finished she switches to **Done** and chimes; and if the answer turns into "Server busy", she gets **Angry**. The DeepSeek web app has no actions that need your confirmation, so there is no **Needs confirmation** state in this mode.
+>
+> You can use only one mode at a time, and Claude mode is the default: after switching to DeepSeek she stops watching claude.ai, and vice versa. Jumping to a chat from the right-click menu, system notifications, and "Show on all websites" all follow whichever site is currently selected.
+
 <br>
 
 ## Playing with her
@@ -347,7 +370,7 @@ If you are looking at another tab, **Done** and **Needs confirmation** also trig
 
 **✋ Drag** — Press and hold to drag her anywhere. She will be in the same spot the next time you open the page.
 
-**📖 Right-click menu** — Right-click her to open a small bookmark-style menu (right-clicking does not trigger an expression). The first item is 「跳到 Claude 聊天页」 (Go to Claude chat):
+**📖 Right-click menu** — Right-click her to open a small bookmark-style menu (right-clicking does not trigger an expression). The first item is 「跳到 Claude 聊天页」 (Go to Claude chat), or 「跳到 DeepSeek 聊天页」 (Go to DeepSeek chat) in DeepSeek mode:
 - If claude.ai isn't open yet → opens a new chat for you
 - If exactly one chat is open → jumps straight to it
 - If several chats are open → opens a submenu so you can pick one; the most recently used chats come first, and chats that are working or waiting for confirmation are marked
@@ -360,7 +383,7 @@ The third item is 「特效」 (Effects), which act on the web page itself:
 - **① 黑洞 (Black Hole)** — She switches to a pose holding a black hole: gravity lifts her slightly off the ground and she bobs gently up and down, while a tiny pixel-art black hole floats above her palm (a spinning accretion disk, a glowing ring, spiral arms, particles falling in, and twinkling stars). The effect lasts 5 seconds. During that time, web content near the black hole is bent by gravitational lensing — the closer it is, the stronger the bend; content farther away looks normal, and very close to the hole you can even see a flipped "Einstein ring". She and her dialog box are not distorted. After 5 seconds, everything returns to normal. A low hum plays along (following the volume in Settings). The lens uses Chromium's `backdrop-filter` with an SVG displacement filter, so the distortion only appears in Chromium-based browsers such as Chrome and Edge
 
 > [!IMPORTANT]
-> While she is **waiting for your confirmation**, clicking her does not trigger an expression. Instead, the page scrolls to the confirmation button and highlights it — first things first.
+> While she is **waiting for your confirmation**, clicking her does not trigger an expression. Instead, she takes you straight to the chat that is waiting for you; if you are already on that page, she tells you so. First things first.
 
 <br>
 
@@ -397,12 +420,12 @@ Every time Claude outputs a chunk of text, a pixel-art `token` flies up from abo
 
 <br>
 
-All sounds are synthesized live by the browser; no audio files are bundled. Each of the three event types has its own set of tones. One is picked at random each time, and **the same tone never plays twice in a row**:
+Notification sounds are synthesized live by the browser, with no audio files (the only exception is the sound effects for the mini animations, which are short audio clips built into the extension). Each of the three event types has its own set of tones. One is picked at random each time, and **the same tone never plays twice in a row**:
 
 | Event | Style | Tones |
 |:--|:--|:--|
 | Done | Warm, with a sense of landing | Glass ding · Soft piano · Rising two-note · Three-note arpeggio · Kalimba |
-| Needs confirmation | Bright, a little urgent | Music box · Electronic ding · Two-note alert |
+| Needs confirmation | A gentle call | Soft bell · Breeze · Gentle call (default); Music box · Electronic ding · Two-note alert (can be enabled in Settings) |
 | Starts working | Short and light, at half volume | Marimba · Light tap |
 
 > These are synthesized approximations, not the original sound effects from the Claude app.
@@ -416,7 +439,7 @@ All sounds are synthesized live by the browser; no audio files are bundled. Each
 Click the extension icon in the top-right corner of the browser to open it.
 
 <table>
-<tr><td width="30%"><b>Basics</b></td><td>On/off switch, <b>Show on all websites</b> (在所有网页上显示), dialog box display, and size. You can also <b>preview</b> any state with one click to see how she looks</td></tr>
+<tr><td width="30%"><b>Basics</b></td><td>On/off switch, <b>Watching</b> (陪你盯着: Claude or DeepSeek, one at a time), <b>Show on all websites</b> (在所有网页上显示), dialog box display, and size. You can also <b>preview</b> any state with one click to see how she looks</td></tr>
 <tr><td><b>Sound & notifications</b> (声音与通知)</td><td>Volume and a separate switch for each of the three notification sound types. Every tone can be previewed with ▶; uncheck a tone and it will never be picked. You can also upload your own "done" sound</td></tr>
 <tr><td><b>Appearance</b> (形象)</td><td>Upload your own PNG for any state to replace the built-in artwork (horizontal multi-frame animation strips are supported, and white backgrounds are removed automatically)</td></tr>
 <tr><td><b>Advanced</b> (高级)</td><td>Wait times, detection rules, and <b>live detection results for the current page</b></td></tr>
@@ -464,7 +487,7 @@ Any state you don't upload keeps its built-in artwork. Effects such as stars, zz
 
 <br>
 
-When claude.ai is redesigned, its page structure may change and detection can stop working. First open Settings → **Advanced** (高级) and look at the rows under "Current page detection" (当前页面检测):
+When claude.ai (or DeepSeek) is redesigned, its page structure may change and detection can stop working. First open Settings → **Advanced** (高级) and look at the rows under "Current page detection" (当前页面检测):
 
 - **Generating** (正在生成) always shows "No" (否) → the generating state isn't being detected
 - **Confirmation button** (确认按钮) always shows "None" (无) → the confirmation buttons in your interface may use text that isn't in the default rules
@@ -497,7 +520,7 @@ Turn off "Enable" (启用) at the top of the settings panel. When you turn it ba
 
 ## Privacy
 
-She only reads content on `https://claude.ai/*` pages to figure out what Claude is doing. With "Show on all websites" turned on, she also appears on other websites, but there she **only displays herself** and does not read the page's content.
+She only reads content on the AI chat site you have selected (`https://claude.ai/*` in Claude mode, `https://chat.deepseek.com/*` in DeepSeek mode) to figure out what the AI is doing. With "Show on all websites" turned on, she also appears on other websites, but there she **only displays herself** and does not read the page's content.
 
 - No network access; nothing is sent anywhere
 - Your settings and any images or audio you upload are stored only in your own browser
@@ -511,18 +534,23 @@ She only reads content on `https://claude.ai/*` pages to figure out what Claude 
 <br>
 
 ```
-claude-chan/
-├─ manifest.json     Extension manifest
-├─ content.js        State detection · dialog box · interaction · lines
-├─ sprite.js         Character rendering: artwork + motion + effects + tokens
-├─ sprite-art.js     Seven built-in artworks (background removed, quantized to 96 colors)
-├─ book.js           The pixel-art book behind the dialog box
-├─ sounds.js         Sound synthesis and no-repeat random selection
-├─ defaults.js       Default settings
-├─ background.js     System notifications, icon badge
-├─ popup.html / .js  Settings panel
-├─ icons/            Icons
-└─ docs/             Images used in this README
+cchan-pixelcompanion_<version>/
+├─ manifest.json      Extension manifest
+├─ content.js         State detection (Claude / DeepSeek) · dialog box · interaction · lines · right-click menu
+├─ sprite.js          Character rendering: artwork + motion + effects + tokens
+├─ sprite-art.js      Built-in artwork: seven states + the black-hole pose (background removed, quantized to 96 colors)
+├─ book.js            The pixel-art book behind the dialog box
+├─ sounds.js          Sound synthesis and no-repeat random selection
+├─ anim-logo.js       Mini animation "Claude娘降临" (Claude-chan Descends)
+├─ anim-logo-art.js   ↑ its petal shapes and sound effect
+├─ anim-book.js       Mini animation "书页纷飞" (Flying Pages)
+├─ anim-art.js        ↑ its pixel-art book and sound effect
+├─ fx-blackhole.js    "Black Hole" effect: the black hole itself + gravitational lensing
+├─ defaults.js        Default settings and the supported AI chat sites
+├─ background.js      System notifications, icon badge, state relay, right-click menu jumps
+├─ popup.html / .js   Settings panel
+├─ icons/             Icons
+└─ docs/              Images used in this README
 ```
 
 **Changing her lines**: Search for `LINES` in `content.js`. Each situation has a list of sentences — just add yours to it.
@@ -535,6 +563,8 @@ claude-chan/
 | Latest output | The last `[data-is-streaming]` / `.font-claude-response` element |
 | Needs confirmation | The button text matches the regular expression in Settings |
 | Error | A visible `[role="alert"]` contains words such as error / failed / 出错 |
+
+Detection in **DeepSeek mode** lives in `SELS.deepseek` and `dsWorking()` in `content.js`: when the input box is empty and the send button next to it has turned into an active "Stop" button, DeepSeek counts as answering; the latest answer (`.ds-markdown`) changing length several times in a row also counts. An answer that contains "服务器繁忙" (server busy) counts as an error.
 
 **Changing how the book looks**: The constants at the start of `book.js` control the cover thickness, the spine width, and how far the covers stick out.
 

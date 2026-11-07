@@ -44,6 +44,11 @@
   .chip.off { opacity:.45; }
   .chip button { padding:0 4px; box-shadow:none; border-width:1px; font-size:10px; }
   .chip.playing { border-color: var(--orange); background:#ffe8da; }
+  .seg { display:inline-flex; border:2px solid var(--line); }
+  .seg label { display:inline-flex; align-items:center; gap:3px; padding:1px 8px; cursor:pointer; }
+  .seg label + label { border-left:2px solid var(--line); }
+  .seg input { display:none; }
+  .seg label.on { background: var(--orange); color:#fff; }
 </style>
 </head>
 <body>
@@ -55,8 +60,15 @@
 
 <section>
   <label class="row">启用 <input type="checkbox" id="enabled"></label>
+  <div class="row">陪你盯着
+    <span class="seg" id="siteSeg">
+      <label><input type="radio" name="site" value="claude"> Claude</label>
+      <label><input type="radio" name="site" value="deepseek"> DeepSeek</label>
+    </span>
+  </div>
+  <div class="hint" id="siteHint"></div>
   <label class="row">在所有网页上显示 <input type="checkbox" id="everywhere"></label>
-  <div class="hint">关掉后只在 claude.ai 上出现；打开后逛别的网页时她也在，状态跟着 claude.ai 走</div>
+  <div class="hint" id="everyHint">关掉后只在 claude.ai 上出现；打开后逛别的网页时她也在，状态跟着 claude.ai 走</div>
   <label class="row">显示对话框 <input type="checkbox" id="showBubble"></label>
   <p class="hint" style="margin:-2px 0 4px">关掉后平时不显示，只在需要你确认时出现。</p>
   <label class="row">大小 <input type="range" id="height" min="100" max="360" step="10"></label>
@@ -107,7 +119,7 @@
     <label class="row">待机多久后睡着（分钟） <input type="number" id="sleepAfterMin" min="1" max="120"></label>
     <div class="btns"><button id="resetPos">把她放回右下角</button> <button id="resetAll">恢复默认设置</button></div>
     <p class="hint">当前页面检测：</p>
-    <div class="status" id="status">（打开 claude.ai 页面后显示）</div>
+    <div class="status" id="status">（打开 AI 聊天页面后显示）</div>
   </details>
 </section>
 

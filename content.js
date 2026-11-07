@@ -1,23 +1,36 @@
-// Claude 娘 —— 运行在 claude.ai 页面里，监听 Claude 的工作状态
+// Claude 娘 —— 运行在 AI 聊天页面里（claude.ai 或 chat.deepseek.com，设置里二选一），监听 AI 的工作状态
 (function () {
   'use strict';
   if (window.__claudeChanLoaded) return;
   window.__claudeChanLoaded = true;
-
-  // claude.ai 上的她负责盯着 Claude；其他网页上的她只是"转播"，状态从后台同步过来
-  const IS_CLAUDE = location.hostname === 'claude.ai';
 
   // ------------------------------------------------------------------ 设置
   const DEFAULTS = window.CLAUDE_CHAN_DEFAULTS;
   let cfg = Object.assign({}, DEFAULTS);
   let confirmRe = new RegExp(DEFAULTS.confirmPattern, 'i');
 
-  // 页面结构选择器（claude.ai 改版时可能需要更新）
-  const SEL = {
-    streaming: '[data-is-streaming="true"]',
-    stopButton: 'button[aria-label*="Stop" i], button[aria-label*="停止"], button[data-testid*="stop" i]',
-    assistantMsg: '[data-is-streaming], .font-claude-response, .font-claude-message',
+  // 她盯着哪个 AI：Claude 模式盯 claude.ai，DeepSeek 模式盯 chat.deepseek.com（设置里切换，二选一）
+  // IS_CLAUDE = "这个页面就是她要盯的那个 AI 聊天站"；其他网页上的她只是"转播"，状态从后台同步过来
+  const SITES = window.CLAUDE_CHAN_SITES;
+  const site = () => SITES[cfg.site] || SITES.claude;
+  const AI = () => site().name;
+  const isDS = () => site().id === 'deepseek';
+  let IS_CLAUDE = false;
+
+  // 页面结构选择器（网站改版时可能需要更新）
+  const SELS = {
+    claude: {
+      streaming: '[data-is-streaming="true"]',
+      stopButton: 'button[aria-label*="Stop" i], button[aria-label*="停止"], button[data-testid*="stop" i]',
+      assistantMsg: '[data-is-streaming], .font-claude-response, .font-claude-message',
+    },
+    deepseek: {
+      streaming: '[data-is-streaming="true"]',
+      stopButton: 'button[aria-label*="Stop" i], button[aria-label*="停止"], [role="button"][aria-label*="Stop" i], [role="button"][aria-label*="停止"]',
+      assistantMsg: '.ds-markdown',
+    },
   };
+  let SEL = SELS.claude;
 
   // ------------------------------------------------------------------ DOM（Shadow DOM 隔离样式）
   const host = document.createElement('div');
@@ -139,8 +152,7 @@
   window.addEventListener('keydown', unlock, { capture: true, passive: true });
 
   const bank = new window.ClaudeChanSounds.SoundBank(audio);
-  // 预渲染全部音色，第一次播放时不用等（只在 claude.ai 上；其他网页用到时再合成，免得每个网页都多算一遍）
-  if (IS_CLAUDE) Object.keys(window.ClaudeChanSounds.SOUNDS).forEach((id) => bank.buffer(id));
+  // 预渲染全部音色，第一次播放时不用等（只在 AI 聊天页上做，见 setHostMode；其他网页用到时再合成）
 
   function playCat(cat) {
     if (!cfg.sound) return;
@@ -194,10 +206,45 @@
   }
 
   function isWorking() {
+    if (isDS()) return dsWorking();
     if (document.querySelector(SEL.streaming)) return true;
     const stops = document.querySelectorAll(SEL.stopButton);
     for (const b of stops) if (visible(b)) return true;
     return false;
+  }
+
+  // ---- DeepSeek：网页版只有对话（没有工具 / 权限确认），所以只判断"在不在回答"
+  // 1) 输入框旁边的发送键：空输入框时平常是灰的（aria-disabled="true"）；正在回答时它变成"停止"键，是亮的
+  //    —— 必须先亲眼看到过它变灰，才相信这条线索（免得认错按钮，一直以为在工作）
+  // 2) 兜底：最新一条回答的字数在不停地变（连续变了好几次），就算在工作
+  let dsSendSeenOff = false, dsKey = '', dsKeyPath = '', dsChanges = [], dsOn = false, dsLastChange = 0;
+  function dsSendButton() {
+    const ta = document.querySelector('textarea');
+    if (!ta || host.contains(ta)) return null;
+    let box = ta.parentElement;
+    for (let i = 0; i < 7 && box; i++, box = box.parentElement) {
+      const btns = [...box.querySelectorAll('[role="button"], button')].filter((b) => b.querySelector('svg') && visible(b));
+      if (btns.length) return { ta, btn: btns[btns.length - 1] };
+    }
+    return null;
+  }
+  function dsWorking() {
+    const now = Date.now();
+    for (const b of document.querySelectorAll(SEL.stopButton)) if (visible(b) && !host.contains(b)) return true;
+    const sb = dsSendButton();
+    if (sb && !sb.ta.value.trim()) {
+      const off = sb.btn.getAttribute('aria-disabled') === 'true' || sb.btn.disabled;
+      if (off) dsSendSeenOff = true;
+      else if (dsSendSeenOff) return true;
+    }
+    const all = document.querySelectorAll(SEL.assistantMsg);
+    const key = all.length + ':' + (all.length ? (all[all.length - 1].textContent || '').length : 0);
+    if (dsKeyPath !== location.pathname) { dsKeyPath = location.pathname; dsKey = key; dsChanges = []; dsOn = false; return false; }
+    if (key !== dsKey) { dsKey = key; dsChanges.push(now); dsLastChange = now; }
+    dsChanges = dsChanges.filter((t) => now - t < 3000);
+    if (!dsOn && dsChanges.length >= 3) dsOn = true;      // 连续冒字才算（你自己发出去那一句只会变一次）
+    if (dsOn && now - dsLastChange > 2000) dsOn = false;
+    return dsOn;
   }
 
   // 只在对话页里找"等你确认 / 等你选"：设置页、账号页这些地方的单选和按钮不算
@@ -214,7 +261,7 @@
     return !root.contains(el);
   }
   function findConfirm() {
-    if (!inConvoPage()) return null;
+    if (isDS() || !inConvoPage()) return null;           // DeepSeek 网页版没有需要确认的操作
     const hits = [];
     const nodes = document.querySelectorAll('button, [role="button"]');
     for (const b of nodes) {
@@ -279,7 +326,7 @@
   const inChrome = (el) => !!el.closest(CHROME_SEL);
   const hasText = (el) => /[\p{L}\p{N}]/u.test((el.innerText || el.textContent || '').trim());   // 只有图标、没有字的按钮不算选项
   function findChoice() {
-    if (!inConvoPage()) return null;
+    if (isDS() || !inConvoPage()) return null;
     const hits = [];
     // 1) 标准的单选 / 多选 / 列表选项：至少两个"有字"的选项
     for (const g of document.querySelectorAll('[role="radiogroup"], [role="listbox"], fieldset, form, [role="group"]')) {
@@ -324,7 +371,13 @@
 
   // 页面报错（只看明确的提示区域，避免误判）
   const ERR_RE = /(something went wrong|an error|error occurred|failed|unable to|try again|rate limit|limit reached|出错|错误|失败|上限|请重试)/i;
+  const DS_BUSY_RE = /(服务器繁忙|server is busy)/i;
   function findError() {
+    // DeepSeek 的"服务器繁忙，请稍后再试。"是直接写在回答里的 —— 只认刚刚在回答的那一条
+    if (isDS() && Date.now() - lastWorkingSeen < 8000) {
+      const t = lastAssistantText();
+      if (DS_BUSY_RE.test(t)) return t.slice(0, 80);
+    }
     for (const el of document.querySelectorAll('[role="alert"], [data-testid*="error" i]')) {
       if (host.contains(el)) continue;
       const t = (el.innerText || '').trim();
@@ -365,16 +418,16 @@
     if (s === 'done') {
       doneAt = Date.now();
       playDing();
-      notify('Claude 做完啦 ✓', liveText || '回复已完成');
+      notify(`${AI()} 做完啦 ✓`, liveText || '回复已完成');
     }
     if (s === 'confirm') {
       playAttention();
-      notify('Claude 需要你确认 ！', (confirmInfo && confirmInfo.text) || '有一步操作在等你点头');
+      notify(`${AI()} 需要你确认 ！`, (confirmInfo && confirmInfo.text) || '有一步操作在等你点头');
     }
     if (s === 'angry') {
       playAttention();
-      if (angryReason === 'timeout') notify('Claude 等你确认好久了 💢', (confirmInfo && confirmInfo.text) || '快回来点一下');
-      else notify('Claude 出错了', errText || '页面上出现了错误提示');
+      if (angryReason === 'timeout') notify(`${AI()} 等你确认好久了 💢`, (confirmInfo && confirmInfo.text) || '快回来点一下');
+      else notify(`${AI()} 出错了`, errText || '页面上出现了错误提示');
     }
     badge(s);
     paintBubble();
@@ -426,7 +479,7 @@
   let mirror = null;            // { state, tag, text, live, reason, tabId }
   let mirrorHoldUntil = 0;
   function mirrorView() {
-    if (!mirror) return { tag: '待机', text: '打开 claude.ai，我就能陪你盯着 Claude 啦～', live: false };
+    if (!mirror) return { tag: '待机', text: `打开 ${site().host}，我就能陪你盯着 ${AI()} 啦～`, live: false };
     const v = Object.assign({}, mirror);
     if (v.state === 'confirm') v.text = v.text.replace('👉 就在这一页哦', '👉 点我跳过去');
     if (v.state === 'angry' && v.reason !== 'error') v.text = v.text.replace('👉 就在这一页，快去确认', '👉 快点我跳过去确认');
@@ -777,7 +830,8 @@
     return el;
   }
   const shortTitle = (t) => {
-    t = (t || '').replace(/\s*[-–|]\s*Claude\s*$/i, '').trim() || '新对话';
+    t = (t || '').replace(/\s*[-–|]\s*(Claude|DeepSeek)\s*$/i, '').trim();
+    if (!t || /^DeepSeek\b/i.test(t)) t = '新对话';
     return t.length > 18 ? t.slice(0, 18) + '…' : t;
   };
   // 小动画列表：[id, 名字, 小字说明]
@@ -816,15 +870,15 @@
     const others = tabs.filter((t) => !t.current);
     if (!tabs.length) {
       // 没开 claude.ai → 新建一个
-      mkItem(menu, { ico: '✚', lab: '打开 Claude 聊天页', hint: '新建', onPick: () => ask({ type: 'openClaude' }) });
+      mkItem(menu, { ico: '✚', lab: `打开 ${AI()} 聊天页`, hint: '新建', onPick: () => ask({ type: 'openClaude' }) });
     } else if (tabs.length === 1) {
       const t = tabs[0];
       mkItem(menu, t.current
-        ? { ico: '➜', lab: '你就在 Claude 页面上哦', off: true }
-        : { ico: '➜', lab: '跳到 Claude 聊天页', hint: shortTitle(t.title), onPick: () => ask({ type: 'focusClaude', tabId: t.id }) });
+        ? { ico: '➜', lab: `你就在 ${AI()} 页面上哦`, off: true }
+        : { ico: '➜', lab: `跳到 ${AI()} 聊天页`, hint: shortTitle(t.title), onPick: () => ask({ type: 'focusClaude', tabId: t.id }) });
     } else {
       // 开了好几个 → 子菜单里选
-      const parent = mkItem(menu, { ico: '➜', lab: '跳到 Claude 聊天页', hint: others.length + ' 个', arrow: true });
+      const parent = mkItem(menu, { ico: '➜', lab: `跳到 ${AI()} 聊天页`, hint: others.length + ' 个', arrow: true });
       const sub = mkSub(parent, '要去哪一个？');
       tabs.forEach((t) => {
         const it = mkItem(sub, { ico: t.current ? '·' : '❯', lab: shortTitle(t.title), hint: t.current ? '当前' : '', off: t.current,
@@ -981,7 +1035,7 @@
     paintBubble();
   }
 
-  chrome.storage.sync.get(DEFAULTS, (v) => { cfg = Object.assign({}, DEFAULTS, v); applyCfg(); });
+  chrome.storage.sync.get(DEFAULTS, (v) => { cfg = Object.assign({}, DEFAULTS, v); setHostMode(location.hostname === site().host); applyCfg(); });
   chrome.storage.local.get({ customSound: null, customSprites: null }, (v) => {
     if (v.customSound) loadCustomSound(v.customSound);
     if (v.customSprites) loadCustomSprites(v.customSprites);
@@ -989,6 +1043,7 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'sync') {
       for (const [k, c] of Object.entries(changes)) cfg[k] = c.newValue === undefined ? DEFAULTS[k] : c.newValue;
+      if (changes.site) setHostMode(location.hostname === site().host);
       applyCfg();
     } else if (area === 'local') {
       if (changes.customSound) loadCustomSound(changes.customSound.newValue);
@@ -1009,7 +1064,7 @@
       else if (msg.what === 'attention') playAttention();
       else if (msg.what === 'startSound') playCat('start');
       else {
-        const demo = { working: '正在逐字同步 Claude 的输出…', confirm: '那个…能帮我确认一下吗？\nClaude 想要运行一条命令（演示）\n👉 点我跳回 Claude',
+        const demo = { working: `正在逐字同步 ${AI()} 的输出…`, confirm: `那个…能帮我确认一下吗？\n${AI()} 想要运行一条命令（演示）\n👉 点我跳回 ${AI()}`,
                        angry: '哼！等你好久了！\n👉 快点我跳回去确认', done: '叮～做完啦！', drowsy: '呼啊…好困…（有事叫我）', sleep: 'zzz…', idle: '准备好啦。' };
         mirrorHoldUntil = 0;
         applyMirror({ state: msg.what, tag: TAGS[msg.what], text: demo[msg.what] || '', live: msg.what === 'working', reason: 'timeout', tabId: null });
@@ -1020,7 +1075,7 @@
       return true;
     }
     if (!IS_CLAUDE && msg.type === 'status') {
-      reply({ state, working: false, confirm: false, text: '（这个网页上的她在转播 claude.ai 的状态）', sounds: actx ? actx.state : 'locked' });
+      reply({ state, working: false, confirm: false, text: `（这个网页上的她在转播 ${site().host} 的状态）`, site: site().id, host: false, sounds: actx ? actx.state : 'locked' });
       return true;
     }
     if (msg.type === 'test') {
@@ -1030,8 +1085,8 @@
       else if (msg.what === 'startSound') playCat('start');
       else {
         hadWork = false;
-        if (msg.what === 'working') liveText = '正在逐字同步 Claude 的输出…';
-        if (msg.what === 'confirm' || msg.what === 'angry') confirmInfo = { el: null, text: 'Claude 想要运行一条命令（演示）' };
+        if (msg.what === 'working') liveText = `正在逐字同步 ${AI()} 的输出…`;
+        if (msg.what === 'confirm' || msg.what === 'angry') confirmInfo = { el: null, text: `${AI()} 想要运行一条命令（演示）` };
         if (msg.what === 'angry') angryReason = 'timeout';
         state = '__test';
         setState(msg.what);
@@ -1040,25 +1095,50 @@
       }
       reply({ ok: true });
     } else if (msg.type === 'status') {
-      reply({ state, working: isWorking(), confirm: !!(findConfirm() || findChoice()), text: liveText, sounds: actx ? actx.state : 'locked' });
+      reply({ state, working: isWorking(), confirm: !!(findConfirm() || findChoice()), text: liveText, site: site().id, host: true, sounds: actx ? actx.state : 'locked' });
     }
     return true;
   });
 
   let testHoldUntil = 0;
-  if (IS_CLAUDE) {
-    setInterval(() => { if (Date.now() > testHoldUntil) tick(); }, 400);
-    // 离开 / 关掉这个 claude.ai 页面 → 告诉后台，别的网页上不要还挂着它的状态
-    window.addEventListener('pagehide', () => { try { chrome.runtime.sendMessage({ type: 'live', view: null }); } catch (e) {} });
-    try { chrome.runtime.sendMessage({ type: 'whoami' }, (r) => { void chrome.runtime.lastError; myTabId = r && r.tabId; }); } catch (e) {}
-    try { chrome.storage.session.get({ chanLive: null }, (v) => { void chrome.runtime.lastError; applyForeign(v && v.chanLive); }); } catch (e) {}
-    chrome.storage.onChanged.addListener((changes, area) => { if (area === 'session' && changes.chanLive) applyForeign(changes.chanLive.newValue); });
-    mount();
-  } else {
-    // 其他网页：读后台汇总好的状态，之后跟着变
-    loadMirror();
-    chrome.storage.onChanged.addListener((changes, area) => { if (area === 'session' && changes.chanLive) applyMirror(changes.chanLive.newValue); });
+  // ---- 两种身份，可以随时切换（设置里换了 Claude / DeepSeek 模式时）：
+  //   盯站：这个页面就是她要盯的 AI 聊天站 → 自己检测状态，报给后台
+  //   转播：别的网页 → 读后台汇总好的状态，跟着变
+  let tickTimer = 0, booted = false;
+  function setHostMode(on) {
+    if (booted && on === IS_CLAUDE) return;
+    const wasHost = booted && IS_CLAUDE, firstBoot = !booted;
+    booted = true;
+    IS_CLAUDE = on;
+    SEL = SELS[site().id] || SELS.claude;
+    // 换了身份：之前的状态都不作数了
+    hadWork = false; confirmInfo = null; confirmSince = 0; angryReason = null; errText = ''; lastErrText = '';
+    liveText = ''; lastLen = 0; bgWork.clear(); mirror = null; foreign = null; reaction = null;
+    dsSendSeenOff = false; dsKeyPath = ''; dsOn = false;
+    state = 'idle'; lastActivity = Date.now(); curPath = location.pathname;
+    routeChangedAt = firstBoot ? 0 : Date.now();      // 中途换模式时，页面上残留的旧内容先别下结论
+    if (on) {
+      Object.keys(window.ClaudeChanSounds.SOUNDS).forEach((id) => bank.buffer(id));
+      if (!tickTimer) tickTimer = setInterval(() => { if (IS_CLAUDE && Date.now() > testHoldUntil) tick(); }, 400);
+      try { chrome.runtime.sendMessage({ type: 'whoami' }, (r) => { void chrome.runtime.lastError; myTabId = r && r.tabId; }); } catch (e) {}
+      try { chrome.storage.session.get({ chanLive: null }, (v) => { void chrome.runtime.lastError; if (IS_CLAUDE) applyForeign(v && v.chanLive); }); } catch (e) {}
+      publish(true);
+    } else {
+      if (wasHost) {                       // 不再盯这个站了：撤掉它报过的状态和角标
+        try { chrome.runtime.sendMessage({ type: 'live', view: null }); } catch (e) {}
+        badge('idle');
+      }
+      loadMirror();
+    }
+    wrap.dataset.state = dispState();
+    paintBubble();
   }
+  // 离开 / 关掉这个 AI 聊天页 → 告诉后台，别的网页上不要还挂着它的状态
+  window.addEventListener('pagehide', () => { if (IS_CLAUDE) { try { chrome.runtime.sendMessage({ type: 'live', view: null }); } catch (e) {} } });
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'session' || !changes.chanLive || !booted) return;
+    if (IS_CLAUDE) applyForeign(changes.chanLive.newValue); else applyMirror(changes.chanLive.newValue);
+  });
   rafId = requestAnimationFrame(frame);
   void rafId;
 })();

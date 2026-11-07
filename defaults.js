@@ -1,6 +1,7 @@
 // 内容脚本与弹窗共用的默认设置
 window.CLAUDE_CHAN_DEFAULTS = {
   enabled: true,
+  site: 'claude',   // 陪你盯哪个 AI：'claude'（claude.ai）或 'deepseek'（chat.deepseek.com），二选一
   everywhere: true, // 在所有网页上显示（关掉 = 只在 claude.ai 上出现）
   sound: true,
   confirmSound: true,
@@ -21,4 +22,10 @@ window.CLAUDE_CHAN_DEFAULTS = {
   drowsyAfterSec: 90,   // 待机多久后犯困
   sleepAfterMin: 3,     // 待机多久后睡着
   pos: null, // {right, bottom}
+};
+
+// 支持的 AI 聊天站（同一时间只盯一个，在设置里切换）
+window.CLAUDE_CHAN_SITES = {
+  claude:   { id: 'claude',   name: 'Claude',   host: 'claude.ai',         url: 'https://claude.ai/new',      match: 'https://claude.ai/*' },
+  deepseek: { id: 'deepseek', name: 'DeepSeek', host: 'chat.deepseek.com', url: 'https://chat.deepseek.com/', match: 'https://chat.deepseek.com/*' },
 };
