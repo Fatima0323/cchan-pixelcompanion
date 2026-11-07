@@ -26,7 +26,7 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 > [!TIP]
 > 不需要命令行，不需要账号，只要浏览器。
 
-**1 ·** 在 [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) 页面下载最新的 `cchan-pixelcompanion_版本号.zip`（比如 `cchan-pixelcompanion_0.8.0.zip`），解压后得到一个同名文件夹 `cchan-pixelcompanion_版本号`。
+**1 ·** 在 [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) 页面下载最新的 `cchan-pixelcompanion_版本号.zip`（比如 `cchan-pixelcompanion_0.9.0.zip`），解压后得到一个同名文件夹 `cchan-pixelcompanion_版本号`。
 
 **2 ·** 浏览器地址栏打开扩展页面：
 
@@ -85,11 +85,22 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 - 只开了一个 → 直接跳过去
 - 开了好几个 → 展开子菜单让你选，最近用过的排在前面，正在工作 / 等确认的会标出来
 
-菜单第二项是「小动画」，让她表演一段：
+菜单第二项是「计算器」（实用的功能总是排在上面，小动画和特效在下面）：在她旁边弹出一个 Claude 娘风格的像素计算器，用法和 Windows 自带的计算器一样，另外多了括号和乘方。
+
+<img src="docs/calculator.png" alt="Claude 娘计算器：算完 1 + 2 = 3、带括号和乘方的算式、记忆列表" width="80%">
+
+- **按键**：`%` `CE` `C` `⌫` `(` `)` `1/x` `10ˣ`（10 的几次方）`xʸ`（x 的 y 次方：先输入 x，按 `xʸ`，再输入 y，按 `=`）`÷ × − +` `±` `.` `=`，还有一排记忆键 `MC` `MR` `M+` `M−` `MS` `M▾`（`M▾` 打开记忆列表，可以单独调出、加减、删除某一条）
+- **先算谁**：按数学规则，括号最先，然后乘方，然后乘除，最后加减，比如 `1 + 2 × 3 =` 是 `7`，`(1 + 2) × 3 =` 是 `9`。左括号键右下角的小数字表示还有几个括号没关上，按 `=` 时没关上的括号会自动补上
+- **显示**：上面一行小字是算式（比如 `1 + 2 =`、`2 × (3 + 4)`、`10^(3)`、`2 ^ 10`），下面是大数字；连按 `=` 会重复上一次运算；除以 0 之类会显示「除数不能为零」
+- **记住算到哪**：关掉计算器、换个网页，甚至关掉浏览器再打开，下次打开计算器都会回到上一次的样子（比如上次停在 `1 + 2 =` `3`，打开还是它，接着按 `=` 就是 `3 + 2 = 5`）；记忆里存的数也会留着。好几个网页同时开着计算器时，它们是同一个计算器
+- **拖动**：按住标题栏拖到哪里都行，下次会出现在同一个地方；点 `×` 关掉，或者再从右键菜单点「收起计算器」
+- **键盘**：点一下计算器（边框阴影变成橙色）就可以直接用键盘：数字、`.`、`+ - * /`、`Enter` 或 `=`、`Backspace`（退格）、`Delete`（CE）、`Esc`（C）、`%`、`(` `)`、`^` 或 `Y`（xʸ）、`R`（1/x）、`F9`（±）；`Ctrl+C` / `Ctrl+V` 复制、粘贴数字。这时按键只给计算器，不会跑到网页里；点网页别的地方就还给网页
+
+菜单第三项是「小动画」，让她表演一段：
 - **① Claude娘降临** — 嘭一声变成 Claude 的向日葵，使劲挣了三下，花瓣迸开、翻成书页绕着她转；书页冲回来叠成一摞，书壳甩进来夹住，四周的光点旋转着被吸进书里，越来越亮——嘭！她在书的位置现身，站稳后蹦回原位（约 9 秒）
 - **② 书页纷飞** — 嘭一声变成一本书，书翻开，书页哗啦啦喷出来把她整个盖住；一阵风吹过，书页四散飘走，她又站在原地了（约 5 秒，有音效，跟着设置里的音量走）
 
-菜单第三项是「特效」，会作用到网页本身：
+菜单第四项是「特效」，会作用到网页本身：
 - **① 黑洞** — 她换成托着黑洞的姿势，被引力微微托离地面、慢慢上下浮着，手心上方浮着一个像素小黑洞（吸积盘旋转、光环、旋臂、被吸进去的粒子、星星）。持续 5 秒：这期间黑洞附近的网页内容会被引力透镜弯曲（越靠近越弯，离得远就恢复原样，靠得很近还能看到翻过来的"爱因斯坦环"），她本人和对话框不受影响；5 秒后一切回到正常。伴有低沉的嗡鸣（跟着设置里的音量走）。透镜用的是 Chromium 的 `backdrop-filter` + SVG 位移滤镜，只在 Chrome / Edge 等 Chromium 浏览器里有扭曲效果
 
 > [!IMPORTANT]
@@ -256,6 +267,10 @@ cchan-pixelcompanion_版本号/
 ├─ anim-book.js       小动画「书页纷飞」
 ├─ anim-art.js        ↑ 用到的书本像素图和音效
 ├─ fx-blackhole.js    特效「黑洞」：黑洞本体 + 引力透镜
+├─ calc-core.js       计算器的计算逻辑（照着 Windows 计算器"标准"模式）
+├─ calc-ui.js         计算器界面：像素点阵字、按键、记忆列表
+├─ calc.js            计算器面板：打开 / 拖动 / 键盘 / 记住上次算到哪
+├─ calc-keys.js       计算器的键盘钩子（比网页先拿到按键）
 ├─ defaults.js        默认设置、支持的 AI 聊天站
 ├─ background.js      系统通知、图标角标、状态转播、右键菜单的跳转
 ├─ popup.html / .js   设置面板
@@ -316,7 +331,7 @@ She turns pages while Claude writes, gets shy when Claude needs your OK, and chi
 > [!TIP]
 > No command line, no account — all you need is a browser.
 
-**1 ·** Download the latest `cchan-pixelcompanion_<version>.zip` (for example, `cchan-pixelcompanion_0.8.0.zip`) from the [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) page, and unzip it to get a folder with the same name, `cchan-pixelcompanion_<version>`.
+**1 ·** Download the latest `cchan-pixelcompanion_<version>.zip` (for example, `cchan-pixelcompanion_0.9.0.zip`) from the [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) page, and unzip it to get a folder with the same name, `cchan-pixelcompanion_<version>`.
 
 **2 ·** Open the extensions page by typing this into the address bar:
 
@@ -375,11 +390,22 @@ If you are looking at another tab, **Done** and **Needs confirmation** also trig
 - If exactly one chat is open → jumps straight to it
 - If several chats are open → opens a submenu so you can pick one; the most recently used chats come first, and chats that are working or waiting for confirmation are marked
 
-The second item is 「小动画」 (Mini animations), where she puts on a little show:
+The second item is 「计算器」 (Calculator). Practical features always come first in the menu, with the mini animations and effects below them. A pixel-art calculator in Claude-chan's style pops up next to her. It works like the built-in Windows Calculator, with parentheses and powers added.
+
+<img src="docs/calculator.png" alt="The Claude-chan calculator: 1 + 2 = 3, an expression with parentheses and a power, and the memory list" width="80%">
+
+- **Keys**: `%` `CE` `C` `⌫` `(` `)` `1/x` `10ˣ` (10 to the power of x) `xʸ` (x to the power of y: enter x, press `xʸ`, enter y, then press `=`) `÷ × − +` `±` `.` `=`, plus a row of memory keys: `MC` `MR` `M+` `M−` `MS` `M▾` (`M▾` opens the memory list, where you can recall, add to, subtract from, or delete individual entries)
+- **Order of operations**: standard math rules apply. Parentheses come first, then powers, then multiplication and division, then addition and subtraction. For example, `1 + 2 × 3 =` gives `7`, and `(1 + 2) × 3 =` gives `9`. The small number at the bottom-right of the left-parenthesis key shows how many parentheses are still open; any that are still open are closed automatically when you press `=`
+- **Display**: the small line on top shows the expression (for example, `1 + 2 =`, `2 × (3 + 4)`, `10^(3)`, or `2 ^ 10`), and the big number below shows the value. Pressing `=` again repeats the last operation. Errors such as dividing by zero are shown as 「除数不能为零」 (Cannot divide by zero)
+- **Remembers where you left off**: if you close the calculator, switch to another page, or even quit and reopen the browser, the calculator comes back exactly as you left it the next time you open it (for example, if you stopped at `1 + 2 =` `3`, that is what you see, and pressing `=` gives `3 + 2 = 5`). Numbers stored in memory are kept too. If several pages have the calculator open, they all share the same calculator
+- **Moving**: drag the title bar to put it anywhere; it reopens in the same spot next time. Click `×` to close it, or choose 「收起计算器」 (Hide calculator) from the right-click menu
+- **Keyboard**: click the calculator (its border shadow turns orange) to type on it directly: digits, `.`, `+ - * /`, `Enter` or `=`, `Backspace`, `Delete` (CE), `Esc` (C), `%`, `(` `)`, `^` or `Y` (xʸ), `R` (1/x), and `F9` (±). `Ctrl+C` / `Ctrl+V` copy and paste numbers. While the calculator has focus, your keystrokes go only to it, not to the web page; click anywhere else on the page to give the keyboard back
+
+The third item is 「小动画」 (Mini animations), where she puts on a little show:
 - **① Claude娘降临 (Claude-chan Descends)** — *Poof!* She turns into Claude's sunflower logo and strains three times until the petals burst apart and flip into book pages that circle around her. The pages rush back into a stack, the cover swings in to close around them, and the sparks of light around her spiral into the book, glowing brighter and brighter — *poof!* She appears where the book was, steadies herself, and hops back into place (about 9 seconds)
 - **② 书页纷飞 (Flying Pages)** — *Poof!* She turns into a book that falls open, and its pages come pouring out until they cover her completely. A gust of wind blows through, the pages scatter and drift away, and there she is again, standing in the same spot (about 5 seconds, with sound effects that follow the volume in Settings)
 
-The third item is 「特效」 (Effects), which act on the web page itself:
+The fourth item is 「特效」 (Effects), which act on the web page itself:
 - **① 黑洞 (Black Hole)** — She switches to a pose holding a black hole: gravity lifts her slightly off the ground and she bobs gently up and down, while a tiny pixel-art black hole floats above her palm (a spinning accretion disk, a glowing ring, spiral arms, particles falling in, and twinkling stars). The effect lasts 5 seconds. During that time, web content near the black hole is bent by gravitational lensing — the closer it is, the stronger the bend; content farther away looks normal, and very close to the hole you can even see a flipped "Einstein ring". She and her dialog box are not distorted. After 5 seconds, everything returns to normal. A low hum plays along (following the volume in Settings). The lens uses Chromium's `backdrop-filter` with an SVG displacement filter, so the distortion only appears in Chromium-based browsers such as Chrome and Edge
 
 > [!IMPORTANT]
@@ -546,6 +572,10 @@ cchan-pixelcompanion_<version>/
 ├─ anim-book.js       Mini animation "书页纷飞" (Flying Pages)
 ├─ anim-art.js        ↑ its pixel-art book and sound effect
 ├─ fx-blackhole.js    "Black Hole" effect: the black hole itself + gravitational lensing
+├─ calc-core.js       Calculator logic (modeled on the Windows Calculator's Standard mode)
+├─ calc-ui.js         Calculator interface: pixel bitmap font, keys, memory list
+├─ calc.js            Calculator panel: opening, dragging, keyboard, remembering where you left off
+├─ calc-keys.js       Calculator keyboard hook (gets keystrokes before the web page does)
 ├─ defaults.js        Default settings and the supported AI chat sites
 ├─ background.js      System notifications, icon badge, state relay, right-click menu jumps
 ├─ popup.html / .js   Settings panel

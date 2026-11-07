@@ -132,6 +132,13 @@
   const lensImg = lensFilter.querySelector('feImage');
   const lensDisp = lensFilter.querySelector('feDisplacementMap');
   const bhCanvas = shadow.querySelector('.bhfx');
+  // 计算器：第一次从右键菜单打开时才建出来
+  let calcCtl = null;
+  const calcPanel = () => calcCtl || (calcCtl = window.ClaudeChanCalc.create({ shadow, anchor: () => {
+    // 第一次打开时放在她（连同对话框）的左边，不挡住她说的话
+    const a = canvas.getBoundingClientRect(), b = bubble.getBoundingClientRect();
+    return b.width ? { left: Math.min(a.left, b.left), right: Math.max(a.right, b.right), bottom: a.bottom } : a;
+  } }));
 
   const shouldShow = () => cfg.enabled && (IS_CLAUDE || cfg.everywhere);
   function mount() {
@@ -890,11 +897,15 @@
         }
       });
     }
-    // 第二项：小动画
+    // 实用的东西永远放在上面：跳转、计算器，然后才是小动画、特效
+    // 第二项：计算器
+    const calcOpen = !!(calcCtl && calcCtl.isOpen());
+    mkItem(menu, { ico: '▦', lab: calcOpen ? '收起计算器' : '计算器', hint: calcOpen ? '' : '记得上次算到哪', onPick: () => calcPanel().toggle() });
+    // 第三项：小动画
     const ap = mkItem(menu, { ico: '✦', lab: '小动画', arrow: true });
     const asub = mkSub(ap, '让她表演一个～');
     ANIMS.forEach(([id, name, desc], i) => mkItem(asub, { ico: String(i + 1), lab: name, hint: desc, onPick: () => playAnim(id) }));
-    // 第三项：特效（会影响网页本身的效果）
+    // 第四项：特效（会影响网页本身的效果）
     const fp = mkItem(menu, { ico: '◉', lab: '特效', arrow: true });
     const fsub = mkSub(fp, '会作用到网页上哦');
     FXS.forEach(([id, name, desc], i) => mkItem(fsub, { ico: String(i + 1), lab: name, hint: desc, onPick: () => playFx(id) }));
