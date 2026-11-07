@@ -4,18 +4,20 @@ const $ = (id) => document.getElementById(id);
 const STATES = [
   ['idle', '待机'], ['working', '工作中'], ['confirm', '需确认'], ['angry', '生气'], ['done', '完成'], ['drowsy', '犯困'], ['sleep', '睡觉'],
 ];
-const BOOL = ['enabled', 'everywhere', 'showBubble', 'sound', 'confirmSound', 'startSound', 'notify'];
+const BOOL = ['enabled', 'everywhere', 'showBubble', 'sound', 'confirmSound', 'startSound', 'notify', 'sparkSound'];
 const NUM = ['height', 'volume', 'doneHoldSec', 'confirmAngrySec', 'errorHoldSec', 'drowsyAfterSec', 'sleepAfterMin'];
 const TXT = ['confirmPattern', 'confirmSelector'];
-// 陪你盯哪个 AI（二选一）
+// 陪你盯哪个 AI（三选一）
 const SITES = window.CLAUDE_CHAN_SITES;
 let siteId = 'claude';
 const S = () => SITES[siteId] || SITES.claude;
 function showSite() {
   document.querySelectorAll('#siteSeg label').forEach((l) => l.classList.toggle('on', l.querySelector('input').value === siteId));
-  $('siteHint').textContent = siteId === 'deepseek'
-    ? '现在盯着 chat.deepseek.com：DeepSeek 回答时她工作，答完就叮一声（网页版没有需要确认的操作）。claude.ai 上她不再检测。'
-    : '现在盯着 claude.ai：工作、需要确认、完成都会提醒你。切到 DeepSeek 后改为盯 chat.deepseek.com。';
+  $('siteHint').textContent = {
+    claude: '现在盯着 claude.ai：工作、需要确认、完成都会提醒你。另外两个站她不检测。',
+    chatgpt: '现在盯着 chatgpt.com：回答、跑 agent 时她工作；agent 要你确认或接管时她举手；做完就叮一声。另外两个站她不检测。',
+    deepseek: '现在盯着 chat.deepseek.com：DeepSeek 回答时她工作，答完就叮一声（网页版没有需要确认的操作）。另外两个站她不检测。',
+  }[siteId] || '';
   $('everyHint').textContent = `关掉后只在 ${S().host} 上出现；打开后逛别的网页时她也在，状态跟着 ${S().host} 走`;
 }
 

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Claude 娘 · 像素陪伴",
-  "version": "0.9.0",
-  "description": "在 claude.ai 页面上放一只像素 Claude 娘：同步显示 Claude 的输出，完成时叮一声，需要确认时举手提醒。",
+  "version": "0.9.2",
+  "description": "在 Claude / ChatGPT / DeepSeek 页面上放一只像素 Claude 娘：同步显示 AI 的输出，完成时叮一声，需要确认时举手提醒。",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -20,11 +20,11 @@
     "service_worker": "background.js"
   },
   "permissions": ["storage", "unlimitedStorage", "notifications"],
-  "host_permissions": ["https://claude.ai/*", "https://chat.deepseek.com/*"],
+  "host_permissions": ["https://claude.ai/*", "https://chat.deepseek.com/*", "https://chatgpt.com/*", "https://chat.openai.com/*"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["defaults.js", "sounds.js", "sprite-art.js", "sprite.js", "book.js", "anim-art.js", "anim-book.js", "anim-logo-art.js", "anim-logo.js", "fx-blackhole.js", "calc-core.js", "calc-ui.js", "calc.js", "content.js"],
+      "js": ["defaults.js", "sounds.js", "sprite-art.js", "sprite.js", "book.js", "anim-art.js", "anim-book.js", "anim-logo-art.js", "anim-logo.js", "fx-blackhole.js", "calc-core.js", "calc-ui.js", "calc.js", "spark-typing.js", "content.js"],
       "run_at": "document_idle"
     },
     {

@@ -1,4 +1,4 @@
-// Claude 娘 —— 运行在 AI 聊天页面里（claude.ai 或 chat.deepseek.com，设置里二选一），监听 AI 的工作状态
+// Claude 娘 —— 运行在 AI 聊天页面里（claude.ai、chatgpt.com 或 chat.deepseek.com，设置里三选一），监听 AI 的工作状态
 (function () {
   'use strict';
   if (window.__claudeChanLoaded) return;
@@ -9,12 +9,14 @@
   let cfg = Object.assign({}, DEFAULTS);
   let confirmRe = new RegExp(DEFAULTS.confirmPattern, 'i');
 
-  // 她盯着哪个 AI：Claude 模式盯 claude.ai，DeepSeek 模式盯 chat.deepseek.com（设置里切换，二选一）
+  // 她盯着哪个 AI：Claude 模式盯 claude.ai，ChatGPT 模式盯 chatgpt.com，DeepSeek 模式盯 chat.deepseek.com（设置里切换，三选一）
   // IS_CLAUDE = "这个页面就是她要盯的那个 AI 聊天站"；其他网页上的她只是"转播"，状态从后台同步过来
   const SITES = window.CLAUDE_CHAN_SITES;
   const site = () => SITES[cfg.site] || SITES.claude;
   const AI = () => site().name;
   const isDS = () => site().id === 'deepseek';
+  const isGPT = () => site().id === 'chatgpt';
+  const onSite = () => (site().hosts || [site().host]).includes(location.hostname);
   let IS_CLAUDE = false;
 
   // 页面结构选择器（网站改版时可能需要更新）
@@ -23,6 +25,13 @@
       streaming: '[data-is-streaming="true"]',
       stopButton: 'button[aria-label*="Stop" i], button[aria-label*="停止"], button[data-testid*="stop" i]',
       assistantMsg: '[data-is-streaming], .font-claude-response, .font-claude-message',
+    },
+    // ChatGPT：2026 年 9 月改版前后的写法都认（改版后回答没有 data-message-author-role 了，正文在 MarkdownRoot 里）
+    chatgpt: {
+      streaming: '.result-streaming, [data-is-streaming="true"]',
+      stopButton: 'button[data-testid="stop-button"], button[aria-label^="Stop" i], button[aria-label*="停止"], button[aria-label*="中止"]',
+      assistantMsg: '[data-message-author-role="assistant"] .markdown, div[class*="MarkdownRoot-"], [data-message-author-role="assistant"]:not(:has(.markdown))',
+      composer: '#prompt-textarea, form div.ProseMirror[contenteditable="true"], div[contenteditable="true"][role="textbox"]',
     },
     deepseek: {
       streaming: '[data-is-streaming="true"]',
@@ -101,6 +110,10 @@
     /* ---- 特效：引力透镜（在她身后，弯曲网页）+ 黑洞本体（在她前面） ---- */
     .lens { position: fixed; display: none; pointer-events: none; border-radius: 50%; }
     .bhfx { position: fixed; display: none; pointer-events: none; image-rendering: pixelated; }
+    /* ---- Spark Typing：聊天框里打字时的火星（spkg = 跳起来的字，spk = 火星） ---- */
+    .spk, .spkg { position: fixed; left: 0; top: 0; display: none; pointer-events: none; image-rendering: pixelated; }
+    .mi .sw { font-size: 11px; padding: 0 6px; border: 1px solid #4f2414; background: #efe0c6; color: #7a3b22; }
+    .mi .sw.on { background: #d97757; color: #fff; }
   </style>
   <svg width="0" height="0" style="position:absolute"><filter id="cc-lens" x="0" y="0" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
     <feImage x="0" y="0" preserveAspectRatio="none" result="map"/>
@@ -116,6 +129,7 @@
     </div>
   </div>
   <canvas class="bhfx"></canvas>
+  <canvas class="spkg"></canvas><canvas class="spk"></canvas>
   <div class="menu"></div>`;
   const wrap = shadow.querySelector('.wrap');
   const bubble = shadow.querySelector('.bubble');
@@ -140,6 +154,69 @@
     return b.width ? { left: Math.min(a.left, b.left), right: Math.max(a.right, b.right), bottom: a.bottom } : a;
   } }));
   calcPanel();
+
+  // ------------------------------------------------------------------ Spark Typing：在 AI 聊天框里打字时迸火星（右键菜单里开关）
+  const spkCv = shadow.querySelector('.spk'), spkGl = shadow.querySelector('.spkg');
+  let spark = null, sparkKit = null, sparkLastT = 0, sparkWasFast = false, sparkDirty = false, caretStyle = null;
+  const sparkActive = () => !!(cfg.sparkTyping && IS_CLAUDE && shouldShow());
+  // 打字的地方是不是聊天框：DeepSeek 是 textarea，Claude 和 ChatGPT 是可编辑的 div（老版 ChatGPT 是 textarea）
+  function composerOf(t) {
+    if (!t || !t.closest || host.contains(t)) return null;
+    if (isDS()) return t.tagName === 'TEXTAREA' ? t : null;
+    if (isGPT() && t.tagName === 'TEXTAREA') return t.id === 'prompt-textarea' || t.closest('form') ? t : null;   // 老版 ChatGPT 是 textarea
+    return t.closest('[contenteditable="true"]');
+  }
+  const countOf = (el) => [...(el.tagName === 'TEXTAREA' ? el.value : el.innerText).replace(/\s/g, '')].length;
+  // 光标颜色：平时橙色，打得飞快时紫色
+  function sparkCaret(on, fast) {
+    if (!on) { if (caretStyle) { caretStyle.remove(); caretStyle = null; } return; }
+    if (!caretStyle) { caretStyle = document.createElement('style'); caretStyle.id = 'claude-chan-spark-caret'; (document.head || document.documentElement).appendChild(caretStyle); }
+    const target = isDS() ? 'textarea' : isGPT() ? `${SELS.chatgpt.composer}, [contenteditable="true"]` : '[contenteditable="true"]';
+    caretStyle.textContent = `${target} { caret-color: ${fast ? '#8f55ff' : '#d97757'} !important; }`;
+  }
+  function sparkSync() {
+    const on = sparkActive();
+    sparkCaret(on, false); sparkWasFast = false;
+    spkCv.style.display = spkGl.style.display = on ? 'block' : 'none';
+    if (on && !spark) {
+      spark = new window.ClaudeChanSparkTyping.Sparks(spkCv, spkGl);
+      spark.onSound = (kind, info) => {
+        if (!cfg.sparkSound) return;          // 打字机声音默认关，在设置里打开
+        try {
+          if (!sparkKit) sparkKit = window.ClaudeChanSparkTyping.SoundKit(audio());
+          sparkKit.play(kind, info, (cfg.volume == null ? 0.6 : cfg.volume) / 0.6);
+        } catch (e) {}
+      };
+    } else if (!on && spark) {
+      spark.clear(); spark = null;
+      spkCv.width = spkCv.height = spkGl.width = spkGl.height = 0;     // 关掉就把画布的内存也还回去
+    }
+  }
+  window.addEventListener('resize', () => { if (spark) spark.resize(); });
+  document.addEventListener('input', (e) => {
+    if (!spark || !sparkActive()) return;
+    const el = composerOf(e.target); if (!el) return;
+    const it = e.inputType || '';
+    if (e.isComposing || it === 'insertCompositionText') return;     // 输入法还在拼：等上屏再说
+    spark.count = countOf(el);
+    if (it.startsWith('delete')) spark.deleted(el);
+    else if (it === 'insertFromPaste' || it === 'insertFromDrop') spark.typed(el, '··', true);
+    else if (it.startsWith('insert') && it !== 'insertParagraph' && it !== 'insertLineBreak') spark.typed(el, e.data || ' ');
+    sparkDirty = true;
+  }, true);
+  // 中文输入法：一个词上屏 = 一次
+  document.addEventListener('compositionend', (e) => {
+    if (!spark || !sparkActive() || !e.data) return;
+    const el = composerOf(e.target); if (!el) return;
+    setTimeout(() => { if (spark) { spark.count = countOf(el); spark.typed(el, e.data); sparkDirty = true; } }, 0);
+  }, true);
+  // 回车发送：大一点的爆发
+  document.addEventListener('keydown', (e) => {
+    if (!spark || !sparkActive() || e.key !== 'Enter' || e.shiftKey || e.isComposing || e.keyCode === 229) return;
+    const el = composerOf(e.target); if (!el || !countOf(el)) return;
+    const c = window.ClaudeChanSparkTyping.caretOf(el);
+    if (c) { spark.count = countOf(el); spark.sent(c.x, c.y + c.h / 2); sparkDirty = true; }
+  }, true);
 
   const shouldShow = () => cfg.enabled && (IS_CLAUDE || cfg.everywhere);
   function mount() {
@@ -215,9 +292,14 @@
 
   function isWorking() {
     if (isDS()) return dsWorking();
-    if (document.querySelector(SEL.streaming)) return true;
+    if (isGPT()) { for (const el of document.querySelectorAll(SEL.streaming)) if (visible(el)) return true; }   // ChatGPT 页面里有一份看不见的拷贝
+    else if (document.querySelector(SEL.streaming)) return true;
     const stops = document.querySelectorAll(SEL.stopButton);
-    for (const b of stops) if (visible(b)) return true;
+    for (const b of stops) {
+      if (!visible(b)) continue;
+      if (isGPT() && /dictat|voice|record|听写|语音|录音/i.test(b.getAttribute('aria-label') || '')) continue;   // ChatGPT 的"停止听写 / 语音"不算在回答
+      return true;
+    }
     return false;
   }
 
@@ -257,17 +339,22 @@
 
   // 只在对话页里找"等你确认 / 等你选"：设置页、账号页这些地方的单选和按钮不算
   const CONVO_PATH = /^\/(chat|new|code|task)(\/|$)/;
-  const inConvoPage = () => CONVO_PATH.test(location.pathname);
+  // ChatGPT：首页 / 就是新对话，/c/xxx 是对话，/g/... 是 GPT 或项目里的对话（设置是弹窗，下面的弹窗规则会排除）
+  const GPT_CONVO_PATH = /^\/($|c\/|g\/|share\/)/;
+  const inConvoPage = () => (isGPT() ? GPT_CONVO_PATH : CONVO_PATH).test(location.pathname);
   // 弹窗、下拉菜单、浮层（设置弹窗、模型选择、风格选择……）里的选项也不算 —— 只认对话内容里的
   const OVERLAY_SEL = 'dialog, [role="dialog"], [role="alertdialog"], [aria-modal="true"], [data-radix-popper-content-wrapper], [data-radix-popover-content], [data-radix-menu-content], [data-radix-select-content]';
   // 浮层通常被挂到 <body> 最外层（和聊天界面并列），所以还要求：和输入框在同一个大容器里
   function inOverlay(el) {
     if (el.closest(OVERLAY_SEL)) return true;
+    if (isGPT()) return false;      // ChatGPT 的弹窗 / 菜单都带 role="dialog" 或 Radix 标记，上面已经认出来了；它的输入框不一定和对话在同一个大容器里
     const ed = document.querySelector('[contenteditable="true"]');
     if (!ed) return false;
     let root = ed; while (root.parentElement && root.parentElement !== document.body) root = root.parentElement;
     return !root.contains(el);
   }
+  // ChatGPT agent：做有后果的操作前会停下来等你"确认"，要登录时会请你"接管浏览器"；连接器 / 工具调用也会问"允许吗"
+  const GPT_CONFIRM_RE = /^(confirm|确认|approve|批准|allow|允许|always allow|始终允许|deny|拒绝|take over|take over browser|take control|接管|接管浏览器|继续任务|resume)$/i;
   function findConfirm() {
     if (isDS() || !inConvoPage()) return null;           // DeepSeek 网页版没有需要确认的操作
     const hits = [];
@@ -276,7 +363,8 @@
       if (host.contains(b) || inChrome(b)) continue;
       const label = (b.innerText || b.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ');
       if (!label || label.length > 30) continue;
-      if (confirmRe.test(label) && visible(b)) hits.push(b);
+      const hit = confirmRe.test(label) || (isGPT() && GPT_CONFIRM_RE.test(label));
+      if (hit && visible(b) && !(isGPT() && inOverlay(b))) hits.push(b);   // ChatGPT 的弹窗（删除对话、设置……）里的"确认"不算
     }
     if (cfg.confirmSelector) {
       try {
@@ -287,6 +375,12 @@
     // 找按钮所在的提示区域，取一段说明文字
     const btn = hits[0];
     let box = btn.parentElement;
+    if (isGPT()) {
+      // ChatGPT agent 的确认卡片很短：往外找到第一层"除了按钮还有一句话"的容器就停
+      const words = (el) => { let t = el.innerText || ''; el.querySelectorAll('button, [role="button"]').forEach((x) => { t = t.replace((x.innerText || '').trim(), ''); }); return cleanText(t); };
+      for (let i = 0; i < 4 && box && box.parentElement; i++) { if (words(box).length >= 4) break; box = box.parentElement; }
+      return { el: btn, text: words(box).slice(0, 90) };
+    }
     for (let i = 0; i < 4 && box && box.parentElement; i++) {
       if ((box.innerText || '').trim().length > 40) break;
       box = box.parentElement;
@@ -361,15 +455,21 @@
   }
 
   let lastLen = 0, lastTokenAt = 0;
-  function lastAssistantLen() {
+  // 最后一条回答（ChatGPT 改版后整段对话会在页面里渲染两份，只认看得见的那份）
+  function lastAssistantEl() {
     const all = document.querySelectorAll(SEL.assistantMsg);
-    return all.length ? (all[all.length - 1].textContent || '').length : 0;
+    if (!isGPT()) return all.length ? all[all.length - 1] : null;
+    for (let i = all.length - 1; i >= 0; i--) if (!host.contains(all[i]) && visible(all[i])) return all[i];
+    return null;
+  }
+  function lastAssistantLen() {
+    const el = lastAssistantEl();
+    return el ? (el.textContent || '').length : 0;
   }
 
   function lastAssistantText() {
-    const all = document.querySelectorAll(SEL.assistantMsg);
-    if (!all.length) return '';
-    const el = all[all.length - 1];
+    const el = lastAssistantEl();
+    if (!el) return '';
     const txt = (el.innerText || el.textContent || '').trim();
     if (!txt) return '';
     const lines = txt.split('\n').map((s) => s.trim()).filter(Boolean);
@@ -385,6 +485,14 @@
     if (isDS() && Date.now() - lastWorkingSeen < 8000) {
       const t = lastAssistantText();
       if (DS_BUSY_RE.test(t)) return t.slice(0, 80);
+    }
+    // ChatGPT 的"Something went wrong / 生成回复时出错"写在对话里（红字），只认刚刚还在回答时冒出来的
+    if (isGPT() && Date.now() - lastWorkingSeen < 8000) {
+      for (const el of document.querySelectorAll('.text-token-text-error, [class*="text-error"]')) {
+        if (host.contains(el) || !visible(el)) continue;
+        const t = cleanText(el.innerText || '');
+        if (t && t.length < 300 && ERR_RE.test(t)) return t.slice(0, 80);
+      }
     }
     for (const el of document.querySelectorAll('[role="alert"], [data-testid*="error" i]')) {
       if (host.contains(el)) continue;
@@ -408,7 +516,7 @@
   //      但它其实还在服务器上继续写。所以"页面上看不到在写了"≠"写完了"。
   const ROUTE_SETTLE = 2500;            // 刚切换页面的这段时间，页面还在加载/旧内容还没清掉，不下结论
   const BG_EXPIRE = 30 * 60000;         // 后台对话最多记 30 分钟
-  const isConv = (p) => /\/chat\/[^/]+/.test(p);
+  const isConv = (p) => (isGPT() ? /\/c\/[^/]+/ : /\/chat\/[^/]+/).test(p);
   let curPath = location.pathname, routeChangedAt = 0;
   const bgWork = new Map();             // 切走时还在干活的对话 path → 切走的时间
 
@@ -652,6 +760,13 @@
     else if (fxPlay) sprite.render(fxPlay.art, t, 'none');
     else sprite.render(reaction ? reaction.art : dispState(), t, reaction ? reaction.fx : null);
     stepFx(performance.now());
+    if (spark) {
+      const now = performance.now(), dt = Math.min(0.05, sparkLastT ? (now - sparkLastT) / 1000 : 0);
+      sparkLastT = now;
+      spark.step(dt);
+      if (spark.busy() || sparkDirty) { spark.draw(); sparkDirty = spark.busy(); }   // 都消失后再画一次，把画布清干净
+      if (spark.speed.fast !== sparkWasFast) { sparkWasFast = spark.speed.fast; sparkCaret(true, sparkWasFast); }
+    }
     rafId = requestAnimationFrame(frame);
   }
 
@@ -838,8 +953,8 @@
     return el;
   }
   const shortTitle = (t) => {
-    t = (t || '').replace(/\s*[-–|]\s*(Claude|DeepSeek)\s*$/i, '').trim();
-    if (!t || /^DeepSeek\b/i.test(t)) t = '新对话';
+    t = (t || '').replace(/\s*[-–|]\s*(Claude|DeepSeek|ChatGPT)\s*$/i, '').trim();
+    if (!t || /^DeepSeek\b/i.test(t) || /^ChatGPT$/i.test(t)) t = '新对话';
     return t.length > 18 ? t.slice(0, 18) + '…' : t;
   };
   // 小动画列表：[id, 名字, 小字说明]
@@ -910,6 +1025,10 @@
     const fp = mkItem(menu, { ico: '◉', lab: '特效', arrow: true });
     const fsub = mkSub(fp, '会作用到网页上哦');
     FXS.forEach(([id, name, desc], i) => mkItem(fsub, { ico: String(i + 1), lab: name, hint: desc, onPick: () => playFx(id) }));
+    // 第五项：Spark Typing（开关，所有网页同步）
+    const sp = mkItem(menu, { ico: '✧', lab: 'Spark Typing', hint: '', onPick: () => { try { chrome.storage.sync.set({ sparkTyping: !cfg.sparkTyping }); } catch (e) {} } });
+    const sw = document.createElement('span'); sw.className = 'sw' + (cfg.sparkTyping ? ' on' : ''); sw.textContent = cfg.sparkTyping ? '开' : '关';
+    sp.appendChild(sw);
     menu.classList.add('open');
     // 菜单贴着鼠标，碰到屏幕边就往里收
     const mw = menu.offsetWidth, mh = menu.offsetHeight;
@@ -1045,9 +1164,10 @@
     host.style.display = shouldShow() ? '' : 'none';
     mount();
     paintBubble();
+    sparkSync();
   }
 
-  chrome.storage.sync.get(DEFAULTS, (v) => { cfg = Object.assign({}, DEFAULTS, v); setHostMode(location.hostname === site().host); applyCfg(); });
+  chrome.storage.sync.get(DEFAULTS, (v) => { cfg = Object.assign({}, DEFAULTS, v); setHostMode(onSite()); applyCfg(); });
   chrome.storage.local.get({ customSound: null, customSprites: null }, (v) => {
     if (v.customSound) loadCustomSound(v.customSound);
     if (v.customSprites) loadCustomSprites(v.customSprites);
@@ -1055,7 +1175,7 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'sync') {
       for (const [k, c] of Object.entries(changes)) cfg[k] = c.newValue === undefined ? DEFAULTS[k] : c.newValue;
-      if (changes.site) setHostMode(location.hostname === site().host);
+      if (changes.site) setHostMode(onSite());
       applyCfg();
     } else if (area === 'local') {
       if (changes.customSound) loadCustomSound(changes.customSound.newValue);

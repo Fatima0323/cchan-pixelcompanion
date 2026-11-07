@@ -12,7 +12,7 @@
 
 <br>
 
-**一个住在 claude.ai 角落里的小书童。**<br>
+**一个住在 claude.ai 角落里的小书童。**（也能陪你用 ChatGPT 和 DeepSeek）<br>
 Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 
 <sub>Chrome · Edge &nbsp;·&nbsp; Manifest V3 &nbsp;·&nbsp; 不联网 &nbsp;·&nbsp; 不收集任何数据</sub>
@@ -26,7 +26,7 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 > [!TIP]
 > 不需要命令行，不需要账号，只要浏览器。
 
-**1 ·** 在 [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) 页面下载最新的 `cchan-pixelcompanion_版本号.zip`（比如 `cchan-pixelcompanion_0.9.0.zip`），解压后得到一个同名文件夹 `cchan-pixelcompanion_版本号`。
+**1 ·** 在 [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) 页面下载最新的 `cchan-pixelcompanion_版本号.zip`（比如 `cchan-pixelcompanion_0.9.2.zip`），解压后得到一个同名文件夹 `cchan-pixelcompanion_版本号`。
 
 **2 ·** 浏览器地址栏打开扩展页面：
 
@@ -66,9 +66,11 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 如果你正在看别的标签页，**完成**和**需要确认**还会弹一条系统通知，点一下就能跳回来。扩展图标上也会挂一个小角标：`…` 工作中 · `!` 等你确认 · `✓` 完成。
 
 > [!TIP]
-> **也能陪你用 DeepSeek。** 在设置面板最上面的「陪你盯着」里把 Claude 换成 **DeepSeek**，她就改为盯着 [chat.deepseek.com](https://chat.deepseek.com)：DeepSeek 回答时她进入**工作中**（同样逐字同步、冒 token），答完就**完成**、叮一声；回答变成"服务器繁忙"时她会**生气**。DeepSeek 网页版没有需要你确认的操作，所以这个模式下没有**需要确认**。
+> **也能陪你用 ChatGPT。** 在设置面板最上面的「陪你盯着」里选 **ChatGPT**，她就改为盯着 [chatgpt.com](https://chatgpt.com)（老网址 chat.openai.com 也认），功能和 Claude 模式一样全：ChatGPT 回答、或者 **agent** 在替你干活时她**工作中**（逐字同步、冒 token）；agent 停下来请你**确认**某个操作、或者请你**接管浏览器**（比如要你登录）时她**需要确认**，45 秒没人理会**生气**；回答里出现"Something went wrong"之类的报错她也会**生气**；做完了**完成**、叮一声。
 >
-> 两种模式二选一，默认是 Claude 模式：切到 DeepSeek 后她就不再检测 claude.ai，切回来同理。右键菜单里的跳转、系统通知、在所有网页上显示，都会跟着换成当前选中的那个。
+> **也能陪你用 DeepSeek。** 在「陪你盯着」里选 **DeepSeek**，她就改为盯着 [chat.deepseek.com](https://chat.deepseek.com)：DeepSeek 回答时她进入**工作中**（同样逐字同步、冒 token），答完就**完成**、叮一声；回答变成"服务器繁忙"时她会**生气**。DeepSeek 网页版没有需要你确认的操作，所以这个模式下没有**需要确认**。
+>
+> 三种模式三选一，默认是 Claude 模式：选了哪个，她就只检测哪个站，另外两个站她不管。右键菜单里的跳转、系统通知、在所有网页上显示，都会跟着换成当前选中的那个。
 
 <br>
 
@@ -80,7 +82,7 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 
 **✋ 拖动** — 按住拖到任何位置，下次打开还在那里。
 
-**📖 右键菜单** — 右键点她，弹出一张小书签菜单（右键不会触发表情）。第一项是「跳到 Claude 聊天页」（DeepSeek 模式下是「跳到 DeepSeek 聊天页」）：
+**📖 右键菜单** — 右键点她，弹出一张小书签菜单（右键不会触发表情）。第一项是「跳到 Claude 聊天页」（ChatGPT / DeepSeek 模式下是「跳到 ChatGPT 聊天页」/「跳到 DeepSeek 聊天页」）：
 - 还没打开 claude.ai → 帮你新建一个聊天页
 - 只开了一个 → 直接跳过去
 - 开了好几个 → 展开子菜单让你选，最近用过的排在前面，正在工作 / 等确认的会标出来
@@ -103,6 +105,14 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 
 菜单第四项是「特效」，会作用到网页本身：
 - **① 黑洞** — 她换成托着黑洞的姿势，被引力微微托离地面、慢慢上下浮着，手心上方浮着一个像素小黑洞（吸积盘旋转、光环、旋臂、被吸进去的粒子、星星）。持续 5 秒：这期间黑洞附近的网页内容会被引力透镜弯曲（越靠近越弯，离得远就恢复原样，靠得很近还能看到翻过来的"爱因斯坦环"），她本人和对话框不受影响；5 秒后一切回到正常。伴有低沉的嗡鸣（跟着设置里的音量走）。透镜用的是 Chromium 的 `backdrop-filter` + SVG 位移滤镜，只在 Chrome / Edge 等 Chromium 浏览器里有扭曲效果
+
+菜单第五项是 **Spark Typing**，一个开关（默认关，所有网页同步）。打开后，在当前模式那个站（Claude / ChatGPT / DeepSeek）的聊天框里打字时：
+- **光标**变成 Claude 橙色
+- **每个字**都像她生气说话时那样，从上面"砸"下来再轻轻弹一下（字的颜色不变）；中文输入法一次上屏几个字时，一个接一个地砸
+- **光标处迸出一小撮像素火星**（像素点、像素曲线、四芒星），往上方飞，尽量不挡住字。火星的颜色跟着输入框里的字数变：字少时是灰色 + 一点 Claude 橙，写多了变成黄色 + 橙色，写得很长就是黑 + 橙 + 红
+- **打得很快**时，火星里会混进紫色，光标也变成紫色。只看你一口气打出来的那几个字：连着两三个字的节奏够快（英文大约每秒 6 个字母，中文大约每分钟 85 字，混着打按比例折算）就会变紫；停下来想一想（1.5 秒以内）不算慢，想完接着打也不会马上掉；完全停手或慢下来后，紫色还会再亮 2 秒左右
+- 删字会落下一点灰烬，回车发送时会爆发一下
+- **打字机声音**：默认关，在设置的「声音与通知」里勾选「Spark Typing 打字机声音」打开。打字是字锤"哒"一下加字车走一格，空格是闷闷的一声，发送是"叮"一声后字车被推回去的"哗啦啦"。比真的打字机柔和，音量跟着设置里的音量走
 
 > [!IMPORTANT]
 > 她在**等你确认**的时候，点她不会触发表情，而是直接把你带到那个在等你的聊天页；如果你已经在那一页，她会告诉你「已经在这个页面啦」。正事优先。
@@ -161,8 +171,8 @@ Claude 每吐出一段字，她头顶就飞出一个像素字 `token`。输出�
 点浏览器右上角的扩展图标即可打开。
 
 <table>
-<tr><td width="30%"><b>基础</b></td><td>开关、<b>陪你盯着</b>（Claude / DeepSeek 二选一）、<b>在所有网页上显示</b>、对话框显示、大小；还能一键<b>演示</b>任意状态，看她的样子</td></tr>
-<tr><td><b>声音与通知</b></td><td>音量；三类提示音各自开关；每个音色都能 ▶ 试听，取消勾选就不会被抽到；可以上传自己的完成音</td></tr>
+<tr><td width="30%"><b>基础</b></td><td>开关、<b>陪你盯着</b>（Claude / ChatGPT / DeepSeek 三选一）、<b>在所有网页上显示</b>、对话框显示、大小；还能一键<b>演示</b>任意状态，看她的样子</td></tr>
+<tr><td><b>声音与通知</b></td><td>音量；三类提示音各自开关；每个音色都能 ▶ 试听，取消勾选就不会被抽到；可以上传自己的完成音；Spark Typing 的打字机声音（默认关）</td></tr>
 <tr><td><b>形象</b></td><td>给任意状态上传自己的 PNG，替换内置立绘（支持横排多帧动画，白底自动抠掉）</td></tr>
 <tr><td><b>高级</b></td><td>各种等待时长、识别规则，以及<b>当前页面的实时检测结果</b></td></tr>
 </table>
@@ -209,7 +219,7 @@ Claude 每吐出一段字，她头顶就飞出一个像素字 `token`。输出�
 
 <br>
 
-claude.ai（或 DeepSeek）改版后，页面结构可能会变，检测就会失灵。先打开 设置 → **高级**，看"当前页面检测"那几行：
+claude.ai（或 ChatGPT、DeepSeek）改版后，页面结构可能会变，检测就会失灵。先打开 设置 → **高级**，看"当前页面检测"那几行：
 
 - **正在生成** 一直是"否" → 生成状态没识别到
 - **确认按钮** 一直是"无" → 你的界面上，确认按钮的文字可能不在默认规则里
@@ -242,7 +252,7 @@ claude.ai（或 DeepSeek）改版后，页面结构可能会变，检测就会�
 
 ## 隐私
 
-她只读取你选中的那个 AI 聊天站（Claude 模式下是 `https://claude.ai/*`，DeepSeek 模式下是 `https://chat.deepseek.com/*`）上的内容来判断 AI 的状态。打开"在所有网页上显示"后，她也会出现在其他网页上，但在那些网页上**只负责显示**，不读取网页内容。
+她只读取你选中的那个 AI 聊天站（Claude 模式下是 `https://claude.ai/*`，ChatGPT 模式下是 `https://chatgpt.com/*` 和 `https://chat.openai.com/*`，DeepSeek 模式下是 `https://chat.deepseek.com/*`）上的内容来判断 AI 的状态。打开"在所有网页上显示"后，她也会出现在其他网页上，但在那些网页上**只负责显示**，不读取网页内容。
 
 - 不联网，不向任何地方发送数据
 - 设置、你上传的图片和音频，都只保存在你自己的浏览器里
@@ -258,7 +268,7 @@ claude.ai（或 DeepSeek）改版后，页面结构可能会变，检测就会�
 ```
 cchan-pixelcompanion_版本号/
 ├─ manifest.json      扩展清单
-├─ content.js         状态检测（Claude / DeepSeek）· 对话框 · 互动 · 台词 · 右键菜单
+├─ content.js         状态检测（Claude / ChatGPT / DeepSeek）· 对话框 · 互动 · 台词 · 右键菜单
 ├─ sprite.js          角色渲染：立绘 + 动作 + 特效 + token
 ├─ sprite-art.js      内置立绘：七种状态 + 托着黑洞的姿势（已抠图，96 色量化）
 ├─ book.js            对话框背后那本像素书
@@ -272,6 +282,7 @@ cchan-pixelcompanion_版本号/
 ├─ calc-ui.js         计算器界面：像素点阵字、按键、记忆列表
 ├─ calc.js            计算器面板：打开 / 拖动 / 键盘 / 记住上次算到哪
 ├─ calc-keys.js       计算器的键盘钩子（比网页先拿到按键）
+├─ spark-typing.js    Spark Typing：跳字、火星、打字速度、打字机声音
 ├─ defaults.js        默认设置、支持的 AI 聊天站
 ├─ background.js      系统通知、图标角标、状态转播、右键菜单的跳转
 ├─ popup.html / .js   设置面板
@@ -289,6 +300,8 @@ cchan-pixelcompanion_版本号/
 | 最新输出 | 最后一个 `[data-is-streaming]` / `.font-claude-response` 元素 |
 | 需要确认 | 按钮文字匹配设置里的正则 |
 | 出错 | 可见的 `[role="alert"]` 里出现 error / failed / 出错 等字样 |
+
+**ChatGPT 模式**的检测在 `content.js` 的 `SELS.chatgpt` 和 `GPT_CONFIRM_RE`：停止键（`data-testid="stop-button"` 或 aria-label 以 Stop / 停止开头）可见就算在回答或 agent 在干活；回答正文是 `[data-message-author-role="assistant"] .markdown`（老版）或 `div[class*="MarkdownRoot-"]`（2026 年 9 月改版后），页面里那份看不见的拷贝不算；对话里出现 Confirm / 确认 / Take over browser / 接管浏览器 / Allow 之类的按钮（弹窗里的不算）就是需要确认；刚回答完冒出的红字报错（`.text-token-text-error`）算出错。
 
 **DeepSeek 模式**的检测在 `content.js` 的 `SELS.deepseek` 和 `dsWorking()`：输入框为空时，旁边的发送键变成亮着的"停止"键就算在回答；另外最新一条回答（`.ds-markdown`）的字数在连续变化也算。回答里出现"服务器繁忙"算出错。
 
@@ -318,7 +331,7 @@ cchan-pixelcompanion_版本号/
 
 <br>
 
-**A little study companion who lives in a corner of claude.ai.**<br>
+**A little study companion who lives in a corner of claude.ai** (and can keep you company on ChatGPT and DeepSeek, too).<br>
 She turns pages while Claude writes, gets shy when Claude needs your OK, and chimes when it's done.
 
 <sub>Chrome · Edge &nbsp;·&nbsp; Manifest V3 &nbsp;·&nbsp; Works offline &nbsp;·&nbsp; Collects no data</sub>
@@ -332,7 +345,7 @@ She turns pages while Claude writes, gets shy when Claude needs your OK, and chi
 > [!TIP]
 > No command line, no account — all you need is a browser.
 
-**1 ·** Download the latest `cchan-pixelcompanion_<version>.zip` (for example, `cchan-pixelcompanion_0.9.0.zip`) from the [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) page, and unzip it to get a folder with the same name, `cchan-pixelcompanion_<version>`.
+**1 ·** Download the latest `cchan-pixelcompanion_<version>.zip` (for example, `cchan-pixelcompanion_0.9.2.zip`) from the [Releases](https://github.com/Fatima0323/cchan-pixelcompanion/releases) page, and unzip it to get a folder with the same name, `cchan-pixelcompanion_<version>`.
 
 **2 ·** Open the extensions page by typing this into the address bar:
 
@@ -372,9 +385,11 @@ She keeps an eye on the page and switches between seven looks depending on what 
 If you are looking at another tab, **Done** and **Needs confirmation** also trigger a system notification — click it to jump back. The extension icon also shows a small badge: `…` working · `!` waiting for your confirmation · `✓` done.
 
 > [!TIP]
-> **She can keep you company on DeepSeek, too.** At the top of the settings panel, switch 「陪你盯着」 (Watching) from Claude to **DeepSeek**, and she will watch [chat.deepseek.com](https://chat.deepseek.com) instead: while DeepSeek is answering she is **Working** (mirroring the output word by word and popping out tokens as usual); when the answer is finished she switches to **Done** and chimes; and if the answer turns into "Server busy", she gets **Angry**. The DeepSeek web app has no actions that need your confirmation, so there is no **Needs confirmation** state in this mode.
+> **She can keep you company on ChatGPT, too.** At the top of the settings panel, set 「陪你盯着」 (Watching) to **ChatGPT**, and she will watch [chatgpt.com](https://chatgpt.com) (the old chat.openai.com address works too) with the same full set of features as Claude mode: while ChatGPT is answering, or while its **agent** is doing work for you, she is **Working** (mirroring the output word by word and popping out tokens); when the agent pauses to ask you to **confirm** an action, or asks you to **take over the browser** (for example, to sign in), she switches to **Needs confirmation**, and gets **Angry** if nobody responds within 45 seconds; an error such as "Something went wrong" in the reply also makes her **Angry**; and when it's done she switches to **Done** and chimes.
 >
-> You can use only one mode at a time, and Claude mode is the default: after switching to DeepSeek she stops watching claude.ai, and vice versa. Jumping to a chat from the right-click menu, system notifications, and "Show on all websites" all follow whichever site is currently selected.
+> **She can keep you company on DeepSeek, too.** Set 「陪你盯着」 (Watching) to **DeepSeek**, and she will watch [chat.deepseek.com](https://chat.deepseek.com) instead: while DeepSeek is answering she is **Working** (mirroring the output word by word and popping out tokens as usual); when the answer is finished she switches to **Done** and chimes; and if the answer turns into "Server busy", she gets **Angry**. The DeepSeek web app has no actions that need your confirmation, so there is no **Needs confirmation** state in this mode.
+>
+> You can use only one of the three modes at a time, and Claude mode is the default: she only watches the site you have selected and ignores the other two. Jumping to a chat from the right-click menu, system notifications, and "Show on all websites" all follow whichever site is currently selected.
 
 <br>
 
@@ -386,7 +401,7 @@ If you are looking at another tab, **Done** and **Needs confirmation** also trig
 
 **✋ Drag** — Press and hold to drag her anywhere. She will be in the same spot the next time you open the page.
 
-**📖 Right-click menu** — Right-click her to open a small bookmark-style menu (right-clicking does not trigger an expression). The first item is 「跳到 Claude 聊天页」 (Go to Claude chat), or 「跳到 DeepSeek 聊天页」 (Go to DeepSeek chat) in DeepSeek mode:
+**📖 Right-click menu** — Right-click her to open a small bookmark-style menu (right-clicking does not trigger an expression). The first item is 「跳到 Claude 聊天页」 (Go to Claude chat), or 「跳到 ChatGPT 聊天页」 / 「跳到 DeepSeek 聊天页」 (Go to ChatGPT / DeepSeek chat) in ChatGPT / DeepSeek mode:
 - If claude.ai isn't open yet → opens a new chat for you
 - If exactly one chat is open → jumps straight to it
 - If several chats are open → opens a submenu so you can pick one; the most recently used chats come first, and chats that are working or waiting for confirmation are marked
@@ -409,6 +424,14 @@ The third item is 「小动画」 (Mini animations), where she puts on a little 
 
 The fourth item is 「特效」 (Effects), which act on the web page itself:
 - **① 黑洞 (Black Hole)** — She switches to a pose holding a black hole: gravity lifts her slightly off the ground and she bobs gently up and down, while a tiny pixel-art black hole floats above her palm (a spinning accretion disk, a glowing ring, spiral arms, particles falling in, and twinkling stars). The effect lasts 5 seconds. During that time, web content near the black hole is bent by gravitational lensing — the closer it is, the stronger the bend; content farther away looks normal, and very close to the hole you can even see a flipped "Einstein ring". She and her dialog box are not distorted. After 5 seconds, everything returns to normal. A low hum plays along (following the volume in Settings). The lens uses Chromium's `backdrop-filter` with an SVG displacement filter, so the distortion only appears in Chromium-based browsers such as Chrome and Edge
+
+The fifth item is **Spark Typing**, an on/off switch (off by default, synced across all pages). When it is on and you type in the chat box of the site for the current mode (Claude, ChatGPT, or DeepSeek):
+- **The caret** turns Claude orange
+- **Each character** drops in from above and bounces lightly, the way her lines appear when she is angry (the text color stays the same). When an input method commits several Chinese characters at once, they drop in one after another
+- **A small burst of pixel sparks** (dots, curved trails, and four-pointed stars) flies up from the caret, staying out of the way of the text as much as possible. The spark colors change with the number of characters in the box: gray with a touch of Claude orange at first, yellow and orange as you write more, and black, orange, and red once the text gets long
+- **When you type fast**, purple sparks join in and the caret turns purple. Only the burst you are typing right now counts: if two or three characters in a row come at a fast pace (about 6 letters per second in English, or about 85 characters per minute in Chinese, scaled proportionally when you mix the two), it turns purple. Pausing to think (up to 1.5 seconds) doesn't count as slow, and picking up again right after a pause won't drop it immediately. Once you stop or slow down, the purple lingers for about 2 more seconds
+- Deleting drops a little ash, and pressing Enter to send sets off a bigger burst
+- **Typewriter sounds**: off by default. Turn them on with 「Spark Typing 打字机声音」 (Spark Typing typewriter sounds) under 「声音与通知」 (Sound & notifications) in Settings. Each key is a typebar "clack" followed by the carriage advancing one notch, the space bar is a muffled thud, and sending plays a "ding" followed by the whir of the carriage return. It is softer than a real typewriter, and its volume follows the volume in Settings
 
 > [!IMPORTANT]
 > While she is **waiting for your confirmation**, clicking her does not trigger an expression. Instead, she takes you straight to the chat that is waiting for you; if you are already on that page, she tells you so. First things first.
@@ -467,8 +490,8 @@ Notification sounds are synthesized live by the browser, with no audio files (th
 Click the extension icon in the top-right corner of the browser to open it.
 
 <table>
-<tr><td width="30%"><b>Basics</b></td><td>On/off switch, <b>Watching</b> (陪你盯着: Claude or DeepSeek, one at a time), <b>Show on all websites</b> (在所有网页上显示), dialog box display, and size. You can also <b>preview</b> any state with one click to see how she looks</td></tr>
-<tr><td><b>Sound & notifications</b> (声音与通知)</td><td>Volume and a separate switch for each of the three notification sound types. Every tone can be previewed with ▶; uncheck a tone and it will never be picked. You can also upload your own "done" sound</td></tr>
+<tr><td width="30%"><b>Basics</b></td><td>On/off switch, <b>Watching</b> (陪你盯着: Claude, ChatGPT, or DeepSeek, one at a time), <b>Show on all websites</b> (在所有网页上显示), dialog box display, and size. You can also <b>preview</b> any state with one click to see how she looks</td></tr>
+<tr><td><b>Sound & notifications</b> (声音与通知)</td><td>Volume and a separate switch for each of the three notification sound types. Every tone can be previewed with ▶; uncheck a tone and it will never be picked. You can also upload your own "done" sound. The Spark Typing typewriter sounds (off by default) are also switched on here</td></tr>
 <tr><td><b>Appearance</b> (形象)</td><td>Upload your own PNG for any state to replace the built-in artwork (horizontal multi-frame animation strips are supported, and white backgrounds are removed automatically)</td></tr>
 <tr><td><b>Advanced</b> (高级)</td><td>Wait times, detection rules, and <b>live detection results for the current page</b></td></tr>
 </table>
@@ -515,7 +538,7 @@ Any state you don't upload keeps its built-in artwork. Effects such as stars, zz
 
 <br>
 
-When claude.ai (or DeepSeek) is redesigned, its page structure may change and detection can stop working. First open Settings → **Advanced** (高级) and look at the rows under "Current page detection" (当前页面检测):
+When claude.ai (or ChatGPT or DeepSeek) is redesigned, its page structure may change and detection can stop working. First open Settings → **Advanced** (高级) and look at the rows under "Current page detection" (当前页面检测):
 
 - **Generating** (正在生成) always shows "No" (否) → the generating state isn't being detected
 - **Confirmation button** (确认按钮) always shows "None" (无) → the confirmation buttons in your interface may use text that isn't in the default rules
@@ -548,7 +571,7 @@ Turn off "Enable" (启用) at the top of the settings panel. When you turn it ba
 
 ## Privacy
 
-She only reads content on the AI chat site you have selected (`https://claude.ai/*` in Claude mode, `https://chat.deepseek.com/*` in DeepSeek mode) to figure out what the AI is doing. With "Show on all websites" turned on, she also appears on other websites, but there she **only displays herself** and does not read the page's content.
+She only reads content on the AI chat site you have selected (`https://claude.ai/*` in Claude mode, `https://chatgpt.com/*` and `https://chat.openai.com/*` in ChatGPT mode, `https://chat.deepseek.com/*` in DeepSeek mode) to figure out what the AI is doing. With "Show on all websites" turned on, she also appears on other websites, but there she **only displays herself** and does not read the page's content.
 
 - No network access; nothing is sent anywhere
 - Your settings and any images or audio you upload are stored only in your own browser
@@ -564,7 +587,7 @@ She only reads content on the AI chat site you have selected (`https://claude.ai
 ```
 cchan-pixelcompanion_<version>/
 ├─ manifest.json      Extension manifest
-├─ content.js         State detection (Claude / DeepSeek) · dialog box · interaction · lines · right-click menu
+├─ content.js         State detection (Claude / ChatGPT / DeepSeek) · dialog box · interaction · lines · right-click menu
 ├─ sprite.js          Character rendering: artwork + motion + effects + tokens
 ├─ sprite-art.js      Built-in artwork: seven states + the black-hole pose (background removed, quantized to 96 colors)
 ├─ book.js            The pixel-art book behind the dialog box
@@ -578,6 +601,7 @@ cchan-pixelcompanion_<version>/
 ├─ calc-ui.js         Calculator interface: pixel bitmap font, keys, memory list
 ├─ calc.js            Calculator panel: opening, dragging, keyboard, remembering where you left off
 ├─ calc-keys.js       Calculator keyboard hook (gets keystrokes before the web page does)
+├─ spark-typing.js    Spark Typing: dropping characters, sparks, typing speed, typewriter sounds
 ├─ defaults.js        Default settings and the supported AI chat sites
 ├─ background.js      System notifications, icon badge, state relay, right-click menu jumps
 ├─ popup.html / .js   Settings panel
@@ -595,6 +619,8 @@ cchan-pixelcompanion_<version>/
 | Latest output | The last `[data-is-streaming]` / `.font-claude-response` element |
 | Needs confirmation | The button text matches the regular expression in Settings |
 | Error | A visible `[role="alert"]` contains words such as error / failed / 出错 |
+
+Detection in **ChatGPT mode** lives in `SELS.chatgpt` and `GPT_CONFIRM_RE` in `content.js`: a visible stop button (`data-testid="stop-button"`, or an aria-label starting with Stop / 停止) means ChatGPT is answering or its agent is working; the reply text is `[data-message-author-role="assistant"] .markdown` (older layout) or `div[class*="MarkdownRoot-"]` (after the September 2026 redesign), and the hidden duplicate copy on the page is ignored; a button such as Confirm / 确认 / Take over browser / 接管浏览器 / Allow inside the conversation (not in a dialog) means it needs confirmation; and a red error message (`.text-token-text-error`) that appears right after a reply counts as an error.
 
 Detection in **DeepSeek mode** lives in `SELS.deepseek` and `dsWorking()` in `content.js`: when the input box is empty and the send button next to it has turned into an active "Stop" button, DeepSeek counts as answering; the latest answer (`.ds-markdown`) changing length several times in a row also counts. An answer that contains "服务器繁忙" (server busy) counts as an error.
 

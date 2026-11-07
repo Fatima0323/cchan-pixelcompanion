@@ -1,7 +1,8 @@
-// 后台：系统通知 + 扩展图标角标 + 把 AI 聊天页（claude.ai / chat.deepseek.com，设置里二选一）上的状态转播给所有网页
+// 后台：系统通知 + 扩展图标角标 + 把 AI 聊天页（claude.ai / chat.deepseek.com / chatgpt.com，设置里三选一）上的状态转播给所有网页
 const SITES = {
   claude:   { url: 'https://claude.ai/new',      match: 'https://claude.ai/*' },
   deepseek: { url: 'https://chat.deepseek.com/', match: 'https://chat.deepseek.com/*' },
+  chatgpt:  { url: 'https://chatgpt.com/',       match: ['https://chatgpt.com/*', 'https://chat.openai.com/*'] },
 };
 async function getSite() {
   const v = await chrome.storage.sync.get({ site: 'claude' });
