@@ -132,13 +132,14 @@
   const lensImg = lensFilter.querySelector('feImage');
   const lensDisp = lensFilter.querySelector('feDisplacementMap');
   const bhCanvas = shadow.querySelector('.bhfx');
-  // 计算器：第一次从右键菜单打开时才建出来
+  // 计算器：所有网页共用一个，别的网页里开着的话这里一加载就跟着开
   let calcCtl = null;
   const calcPanel = () => calcCtl || (calcCtl = window.ClaudeChanCalc.create({ shadow, anchor: () => {
     // 第一次打开时放在她（连同对话框）的左边，不挡住她说的话
     const a = canvas.getBoundingClientRect(), b = bubble.getBoundingClientRect();
     return b.width ? { left: Math.min(a.left, b.left), right: Math.max(a.right, b.right), bottom: a.bottom } : a;
   } }));
+  calcPanel();
 
   const shouldShow = () => cfg.enabled && (IS_CLAUDE || cfg.everywhere);
   function mount() {

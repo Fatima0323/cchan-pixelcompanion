@@ -1,10 +1,11 @@
 // Claude 娘 · 计算器 —— 面板：打开 / 关掉 / 拖动 / 鼠标和键盘 / 记住上次算到哪
 // 算到哪（整个计算器的状态）存在 chrome.storage.local 里：关掉再开、换个网页、重启浏览器都会回到这里；
-// 几个网页同时开着计算器时，在一个里按，另一个也会跟着变。
+// 和 Claude 娘一样，所有网页共用一个计算器：开 / 关、算到哪、放在哪都同步，
+// 在一个网页里打开，换到别的网页（包括新打开的）它也在；在一个里按，别的也跟着变。
 (function (root) {
   'use strict';
   const Core = root.ClaudeChanCalcCore, UI = root.ClaudeChanCalcUI;
-  const KEY = 'calcState', POS = 'calcPos';
+  const KEY = 'calcState', POS = 'calcPos', OPEN = 'calcOpen';
   const me = Math.random().toString(36).slice(2);   // 这一页的记号：自己写进去的改动不用再读回来
   const store = {
     get(keys, cb) { try { chrome.storage.local.get(keys, (v) => { void chrome.runtime.lastError; cb(v || {}); }); } catch (e) { cb({}); } },
@@ -37,19 +38,28 @@
     let ui = null, open = false, listOpen = false, focused = false, pos = null, saveT = 0, dirty = false;
     let ready = false, wantShow = false;   // 存档读回来之前先不显示，免得闪一下 0 和默认位置
 
-    store.get({ [KEY]: null, [POS]: null }, (v) => {
+    store.get({ [KEY]: null, [POS]: null, [OPEN]: false }, (v) => {
       if (v[KEY] && v[KEY].s) calc = Core.Calc(v[KEY].s);
       if (v[POS]) pos = v[POS];
       ready = true;
-      if (wantShow) { wantShow = false; show(); }
+      if (wantShow) { wantShow = false; showLocal(true); }
+      else if (v[OPEN]) showWhenReady();          // 别的网页里开着 → 这个网页一打开也开着
     });
     try {
       chrome.storage.onChanged.addListener((ch, area) => {
-        if (area !== 'local' || !ch[KEY]) return;
-        const nv = ch[KEY].newValue;
-        if (!nv || nv.by === me) return;
-        calc = Core.Calc(nv.s);          // 别的网页里按了 → 跟上
-        if (open) render();
+        if (area !== 'local') return;
+        if (ch[KEY]) {
+          const nv = ch[KEY].newValue;
+          if (nv && nv.by !== me) { calc = Core.Calc(nv.s); if (open) render(); }   // 别的网页里按了 → 跟上
+        }
+        if (ch[POS] && ch[POS].newValue) {           // 别的网页里拖了 → 挪到同一个地方
+          pos = ch[POS].newValue;
+          if (open) place();
+        }
+        if (ch[OPEN]) {                               // 别的网页里打开 / 关掉 → 这里也一样
+          if (ch[OPEN].newValue) { if (!open) showWhenReady(); }
+          else closeLocal();
+        }
       });
     } catch (e) {}
 
@@ -85,9 +95,11 @@
       if (pos) { l = pos.left; t = pos.top; }
       else {
         const r = anchor(), w = ui.el.offsetWidth, h = ui.el.offsetHeight;
-        l = r.left - w - 12;
-        if (l < 4) l = r.right + 12;
-        t = r.bottom - h;
+        if (r.width) {
+          l = r.left - w - 12;
+          if (l < 4) l = r.right + 12;
+          t = r.bottom - h;
+        } else { l = innerWidth - w - 280; t = innerHeight - h - 16; }   // 她还没出现：先放在右下角附近
       }
       [l, t] = clamp(l, t);
       ui.el.style.left = l + 'px'; ui.el.style.top = t + 'px';
@@ -176,22 +188,44 @@
       return true;
     };
 
-    function show() {
-      if (!ready) { wantShow = true; return; }
+    // 只在这个网页里显示 / 收起（focus：要不要顺手接住键盘——只有你亲手打开的那个网页才接）
+    function showLocal(focus) {
       if (!ui) build();
       open = true;
       ui.el.style.display = '';
       render();
       place();
-      ui.el.focus({ preventScroll: true });
+      if (focus) {
+        ui.el.focus({ preventScroll: true });
+        // 第一次打开：把它出现的位置记下来，别的网页也放在同一个地方
+        if (!pos) { pos = { left: parseInt(ui.el.style.left, 10), top: parseInt(ui.el.style.top, 10) }; store.set({ [POS]: pos }); }
+      }
     }
-    function close() {
-      wantShow = false;
+    // 跟着别的网页打开：等她在这个网页上出现了再显示，位置才对得上
+    let waitT = 0;
+    function showWhenReady(tries = 0) {
+      clearTimeout(waitT);
+      if (!ready) { waitT = setTimeout(() => showWhenReady(tries), 50); return; }
+      if (pos || anchor().width || tries > 40) { showLocal(false); return; }
+      waitT = setTimeout(() => showWhenReady(tries + 1), 50);
+    }
+    function closeLocal() {
+      wantShow = false; clearTimeout(waitT);
       if (!ui) return;
       open = false; listOpen = false;
       ui.el.style.display = 'none';
       if (ui.el === shadow.activeElement) ui.el.blur();
       flush();
+    }
+    // 你亲手打开 / 关掉：所有网页一起
+    function show() {
+      store.set({ [OPEN]: true });
+      if (!ready) { wantShow = true; return; }
+      showLocal(true);
+    }
+    function close() {
+      store.set({ [OPEN]: false });
+      closeLocal();
     }
     return { show, close, toggle: () => (open || wantShow ? close() : show()), isOpen: () => open || wantShow };
   }

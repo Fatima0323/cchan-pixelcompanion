@@ -92,8 +92,9 @@ Claude 写字时她翻书，要你点头时她害羞，写完了她叮一声。
 - **按键**：`%` `CE` `C` `⌫` `(` `)` `1/x` `10ˣ`（10 的几次方）`xʸ`（x 的 y 次方：先输入 x，按 `xʸ`，再输入 y，按 `=`）`÷ × − +` `±` `.` `=`，还有一排记忆键 `MC` `MR` `M+` `M−` `MS` `M▾`（`M▾` 打开记忆列表，可以单独调出、加减、删除某一条）
 - **先算谁**：按数学规则，括号最先，然后乘方，然后乘除，最后加减，比如 `1 + 2 × 3 =` 是 `7`，`(1 + 2) × 3 =` 是 `9`。左括号键右下角的小数字表示还有几个括号没关上，按 `=` 时没关上的括号会自动补上
 - **显示**：上面一行小字是算式（比如 `1 + 2 =`、`2 × (3 + 4)`、`10^(3)`、`2 ^ 10`），下面是大数字；连按 `=` 会重复上一次运算；除以 0 之类会显示「除数不能为零」
-- **记住算到哪**：关掉计算器、换个网页，甚至关掉浏览器再打开，下次打开计算器都会回到上一次的样子（比如上次停在 `1 + 2 =` `3`，打开还是它，接着按 `=` 就是 `3 + 2 = 5`）；记忆里存的数也会留着。好几个网页同时开着计算器时，它们是同一个计算器
-- **拖动**：按住标题栏拖到哪里都行，下次会出现在同一个地方；点 `×` 关掉，或者再从右键菜单点「收起计算器」
+- **记住算到哪**：关掉计算器、换个网页，甚至关掉浏览器再打开，下次打开计算器都会回到上一次的样子（比如上次停在 `1 + 2 =` `3`，打开还是它，接着按 `=` 就是 `3 + 2 = 5`）；记忆里存的数也会留着
+- **所有网页同步**：和 Claude 娘一样，所有网页共用一个计算器。在一个网页里打开，切到别的网页、或者新打开一个网页，它也在；在一个网页里按、拖动或关掉，其他网页都会跟着变
+- **拖动**：按住标题栏拖到哪里都行，以后都会出现在同一个地方；点 `×` 关掉，或者再从右键菜单点「收起计算器」
 - **键盘**：点一下计算器（边框阴影变成橙色）就可以直接用键盘：数字、`.`、`+ - * /`、`Enter` 或 `=`、`Backspace`（退格）、`Delete`（CE）、`Esc`（C）、`%`、`(` `)`、`^` 或 `Y`（xʸ）、`R`（1/x）、`F9`（±）；`Ctrl+C` / `Ctrl+V` 复制、粘贴数字。这时按键只给计算器，不会跑到网页里；点网页别的地方就还给网页
 
 菜单第三项是「小动画」，让她表演一段：
@@ -397,8 +398,9 @@ The second item is 「计算器」 (Calculator). Practical features always come 
 - **Keys**: `%` `CE` `C` `⌫` `(` `)` `1/x` `10ˣ` (10 to the power of x) `xʸ` (x to the power of y: enter x, press `xʸ`, enter y, then press `=`) `÷ × − +` `±` `.` `=`, plus a row of memory keys: `MC` `MR` `M+` `M−` `MS` `M▾` (`M▾` opens the memory list, where you can recall, add to, subtract from, or delete individual entries)
 - **Order of operations**: standard math rules apply. Parentheses come first, then powers, then multiplication and division, then addition and subtraction. For example, `1 + 2 × 3 =` gives `7`, and `(1 + 2) × 3 =` gives `9`. The small number at the bottom-right of the left-parenthesis key shows how many parentheses are still open; any that are still open are closed automatically when you press `=`
 - **Display**: the small line on top shows the expression (for example, `1 + 2 =`, `2 × (3 + 4)`, `10^(3)`, or `2 ^ 10`), and the big number below shows the value. Pressing `=` again repeats the last operation. Errors such as dividing by zero are shown as 「除数不能为零」 (Cannot divide by zero)
-- **Remembers where you left off**: if you close the calculator, switch to another page, or even quit and reopen the browser, the calculator comes back exactly as you left it the next time you open it (for example, if you stopped at `1 + 2 =` `3`, that is what you see, and pressing `=` gives `3 + 2 = 5`). Numbers stored in memory are kept too. If several pages have the calculator open, they all share the same calculator
-- **Moving**: drag the title bar to put it anywhere; it reopens in the same spot next time. Click `×` to close it, or choose 「收起计算器」 (Hide calculator) from the right-click menu
+- **Remembers where you left off**: if you close the calculator, switch to another page, or even quit and reopen the browser, the calculator comes back exactly as you left it the next time you open it (for example, if you stopped at `1 + 2 =` `3`, that is what you see, and pressing `=` gives `3 + 2 = 5`). Numbers stored in memory are kept too
+- **Synced across all pages**: like Claude-chan herself, every page shares one calculator. Open it on one page, and it is also there when you switch to another page or open a new one. Typing on it, moving it, or closing it on one page does the same on all the others
+- **Moving**: drag the title bar to put it anywhere; it stays in that spot from then on. Click `×` to close it, or choose 「收起计算器」 (Hide calculator) from the right-click menu
 - **Keyboard**: click the calculator (its border shadow turns orange) to type on it directly: digits, `.`, `+ - * /`, `Enter` or `=`, `Backspace`, `Delete` (CE), `Esc` (C), `%`, `(` `)`, `^` or `Y` (xʸ), `R` (1/x), and `F9` (±). `Ctrl+C` / `Ctrl+V` copy and paste numbers. While the calculator has focus, your keystrokes go only to it, not to the web page; click anywhere else on the page to give the keyboard back
 
 The third item is 「小动画」 (Mini animations), where she puts on a little show:
